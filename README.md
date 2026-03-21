@@ -23,9 +23,7 @@ backend/ → FastAPI + data pipeline
 frontend/ → React app
 data/ → raw + processed data
 
-## Setup
-
-### Backend
+## Setup Backend
 cd backend
 pip install -r requirements.txt
 uvicorn app.main:app --reload
