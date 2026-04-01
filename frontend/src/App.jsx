@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   LineChart,
   Line,
@@ -19,6 +19,9 @@ function App() {
   const [selectedMetric, setSelectedMetric] = useState("zhvi");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const isMobile = windowWidth < 768;
+
+  const zhviDescription = "ZHVI stands for Zillow Home Value Index. It represents the typical home value in a given region, estimated by Zillow.";
+  const hpiDescription = "HPI stands for House Price Index. It is an index-based measure of home price changes over time, provided here from FRED.";
 
   useEffect(() => {
     fetchSummary();
@@ -124,6 +127,114 @@ function App() {
     }
 
 
+    function InfoTooltip({ text, isMobile }) {
+      const [open, setOpen] = useState(false);
+      const wrapperRef = useRef(null);
+    
+      useEffect(() => {
+        function handleClickOutside(event) {
+          if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+            setOpen(false);
+          }
+        }
+    
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("touchstart", handleClickOutside);
+    
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+          document.removeEventListener("touchstart", handleClickOutside);
+        };
+      }, []);
+    
+      function handleToggle() {
+        if (isMobile) {
+          setOpen((prev) => !prev);
+        }
+      }
+    
+      return (
+        <span
+          ref={wrapperRef}
+          className={`info-tooltip-wrapper ${open ? "open" : ""}`}
+          style={{
+            position: "relative",
+            display: "inline-flex",
+            alignItems: "center",
+          }}
+        >
+          <button
+            type="button"
+            onClick={handleToggle}
+            aria-label="More information"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "18px",
+              height: "18px",
+              marginLeft: "6px",
+              borderRadius: "999px",
+              border: "none",
+              background: "#e2e8f0",
+              color: "#475569",
+              fontSize: "11px",
+              fontWeight: 700,
+              cursor: "pointer",
+              userSelect: "none",
+              padding: 0,
+              flexShrink: 0,
+            }}
+          >
+            i
+          </button>
+    
+          <span
+            className="info-tooltip-box"
+            style={{
+              position: "absolute",
+              top: "calc(100% + 10px)",
+              left: isMobile ? "0" : "50%",
+              transform: isMobile ? "translateX(0)" : "translateX(-50%)",
+              width: isMobile ? "220px" : "260px",
+              maxWidth: "72vw",
+              background: "rgba(255,255,255,0.98)",
+              color: "#334155",
+              fontSize: "0.82rem",
+              lineHeight: 1.5,
+              padding: "0.85rem 0.95rem",
+              borderRadius: "14px",
+              border: "1px solid #e5e7eb",
+              boxShadow: "0 14px 36px rgba(15,23,42,0.12)",
+              opacity: 0,
+              visibility: "hidden",
+              transition: "all 0.18s ease",
+              zIndex: 30,
+              pointerEvents: "none",
+              backdropFilter: "blur(10px)",
+            }}
+          >
+            <span
+              style={{
+                position: "absolute",
+                top: "-6px",
+                left: isMobile ? "12px" : "50%",
+                transform: isMobile ? "none" : "translateX(-50%) rotate(45deg)",
+                width: "12px",
+                height: "12px",
+                background: "rgba(255,255,255,0.98)",
+                borderLeft: "1px solid #e5e7eb",
+                borderTop: "1px solid #e5e7eb",
+                rotate: isMobile ? "45deg" : undefined,
+              }}
+            />
+            <span style={{ position: "relative", zIndex: 1 }}>{text}</span>
+          </span>
+        </span>
+      );
+    }
+
+
 
   return (
     <div
@@ -192,8 +303,9 @@ function App() {
                   border: "1px solid #f1f5f9"
                 }}
               >
-                <p style={{ color: "#9ca3af", marginBottom: "0.4rem", fontSize:"0.8rem" }}>
+                <p style={{ color: "#9ca3af", marginBottom: "0.4rem", fontSize:"0.8rem", alignItems:"center" }}>
                   Latest ZHVI
+                  <InfoTooltip text={zhviDescription} isMobile={isMobile}/>
                 </p>
                 <h3 style={{ margin: 0, fontSize:"1.2rem", color:"#111827" }}>
                   {formatValue(summary.latest_zhvi?.value, "zhvi")}
@@ -212,8 +324,9 @@ function App() {
                   border: "1px solid #f1f5f9"
                 }}
               >
-                <p style={{ color: "#9ca3af", marginBottom: "0.4rem", fontSize:"0.8rem"}}>
+                <p style={{ color: "#9ca3af", marginBottom: "0.4rem", fontSize:"0.8rem", alignItems:"center"}}>
                   Latest HPI
+                  <InfoTooltip text={hpiDescription} isMobile={isMobile}/>
                 </p>
                 <h3 style={{ margin: 0, fontSize:"1.2rem", color:"#111827" }}>
                   {formatValue(summary.latest_hpi?.value, "hpi")}
@@ -286,8 +399,8 @@ function App() {
         
             
             <div style={{ width:"100%", display:"flex", alignItems:"flex-start"}}>
-              <p style={{ color: "#6b7280"}}>
-                Columbia, MO - {metric.toUpperCase()} - {timeseries.length} records
+              <p style={{ color: "#94a3b8"}}>
+                Columbia, MO - {metric.toUpperCase() == "ZHVI" ? "Typical home value estimated by Zillow" : "Index-based measure of home price changes over time"}  - {timeseries.length} records
               </p>   
             </div>
               
@@ -316,8 +429,8 @@ function App() {
                   marginTop: isMobile ? "0.5rem" : 0
                 }}
               >
-                <option value="zhvi">ZHVI</option>
-                <option value="hpi">HPI</option>
+                <option style={{ color: "#6b7280"}} value="zhvi">ZHVI</option>
+                <option style={{ color: "#6b7280"}} value="hpi">HPI</option>
               </select>
             </div>
            
