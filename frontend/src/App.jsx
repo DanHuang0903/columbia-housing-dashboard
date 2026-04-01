@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
+  Area,
   XAxis,
   YAxis,
   Tooltip,
@@ -15,6 +16,7 @@ function App() {
   const [metric, setMetric] = useState("zhvi");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedMetric, setSelectedMetric] = useState("zhvi");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const isMobile = windowWidth < 768;
 
@@ -93,21 +95,51 @@ function App() {
     return dateString;
   }
 
+  function CustomTooltip({active, payload, label, metric}) {
+    if(!active || !payload || !payload.length) return null;
+    
+    const value = payload[0].value;
+
+    const formattedValue = metric === "zhvi" ? `$${Math.round(value).toLocaleString()}`
+                                            : Number(value).toFixed(2);
+
+    const date = new Date(label).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short"
+     });
+      
+    return(
+      <div style={{
+        background: "rgba(255,255,255,0.96)",
+        border: "1px solid #e5e7eb",
+        borderRadius:"14px",
+        padding: "0.8rem 0.95rem",
+        boxShadow: "0 10px 30px rgba(15, 23, 42, 0.10)",
+        backdropFilter: "blur(9px)"
+      }}>
+        <p style={{ margin: 0, color: "#94a3b8", fontSize: "0.78rem"}}>{date}</p>
+        <p style={{ margin: "0.35rem 0 0", fontWeight: 700, color: "#111827"}}>{formattedValue}</p>
+      </div>
+    );
+    }
+
 
 
   return (
     <div
       style={{
         minHeight: "100vh",
-        background: "#f7f8fc",
+        background: "#f9fafb",
         padding: isMobile ? "1rem" : "2rem",
         fontFamily: "Arial, sans-serif",
         color: "#1f2937",
       }}
     >
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+   
+      <div style={{ margin: "0 auto" }}>
         {/* Header */}
-        <header style={{ marginBottom: "2rem" }}>
+
+        <header style={{marginBottom: "3rem"}}>
           <h1 style={{ 
             color: "#6b7280", 
             marginBottom: "1.5rem", 
@@ -120,10 +152,13 @@ function App() {
             Columbia, MO housing trends using Zillow ZHVI and FRED HPI data.
           </p>
         </header>
+        <hr style={{ marginBottom: "3rem", color: "#9ca3af" }}/>
 
         {/* Summary Cards */}
-        <section style={{ marginBottom: "2rem" }}>
-          <h2 style={{ marginBottom: "1rem" }}>Summary</h2>
+        <section style={{ marginBottom: "2rem", marginTop:"1rem"}}>
+        <div style={{ width:"100%", display:"flex", alignItems:"flex-start", marginBottom:"1rem"}}>
+          <h2 style={{ marginBottom: "1rem", color: "#6b7280"}}>Summary</h2>
+          </div>
 
           {summary ? (
             <div
@@ -135,52 +170,55 @@ function App() {
             >
               <div
                 style={{
-                  background: "white",
-                  padding: "1rem",
-                  borderRadius: "12px",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                  background: "#ffffff",
+                  padding: isMobile ? "1rem" : "1.1rem",
+                  borderRadius: "18px",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
+                  border: "1px solid #f1f5f9"
                 }}
               >
-                <p style={{ color: "#6b7280", marginBottom: "0.5rem" }}>
+                <p style={{ color: "#9ca3af", marginBottom: "0.4rem", fontSize:"0.8rem" }}>
                   Total Months
                 </p>
-                <h3 style={{ margin: 0 }}>{summary.total_rows}</h3>
+                <h3 style={{ margin: 0, fontSize:"1.2rem", color:"#111827" }}>{summary.total_rows}</h3>
               </div>
 
               <div
                 style={{
-                  background: "white",
-                  padding: "1rem",
-                  borderRadius: "12px",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                  background: "#ffffff",
+                  padding: isMobile ? "1rem" : "1.1rem",
+                  borderRadius: "18px",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
+                  border: "1px solid #f1f5f9"
                 }}
               >
-                <p style={{ color: "#6b7280", marginBottom: "0.5rem" }}>
+                <p style={{ color: "#9ca3af", marginBottom: "0.4rem", fontSize:"0.8rem" }}>
                   Latest ZHVI
                 </p>
-                <h3 style={{ margin: 0 }}>
+                <h3 style={{ margin: 0, fontSize:"1.2rem", color:"#111827" }}>
                   {formatValue(summary.latest_zhvi?.value, "zhvi")}
                 </h3>
-                <p style={{ marginTop: "0.5rem", color: "#6b7280" }}>
+                <p style={{ marginTop: "0.4rem", color: "#9ca3af", fontSize:"0.85rem" }}>
                   {summary.latest_zhvi?.date}
                 </p>
               </div>
 
               <div
                 style={{
-                  background: "white",
-                  padding: "1rem",
-                  borderRadius: "12px",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                  background: "#ffffff",
+                  padding: isMobile ? "1rem" : "1.1rem",
+                  borderRadius: "18px",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
+                  border: "1px solid #f1f5f9"
                 }}
               >
-                <p style={{ color: "#6b7280", marginBottom: "0.5rem" }}>
+                <p style={{ color: "#9ca3af", marginBottom: "0.4rem", fontSize:"0.8rem"}}>
                   Latest HPI
                 </p>
-                <h3 style={{ margin: 0 }}>
+                <h3 style={{ margin: 0, fontSize:"1.2rem", color:"#111827" }}>
                   {formatValue(summary.latest_hpi?.value, "hpi")}
                 </h3>
-                <p style={{ marginTop: "0.5rem", color: "#6b7280" }}>
+                <p style={{ color: "#9ca3af", marginBottom: "0.4rem", fontSize:"0.8rem" }}>
                   {summary.latest_hpi?.date}
                 </p>
               </div>
@@ -188,20 +226,21 @@ function App() {
               <div
                 style={{
                   background: "white",
-                  padding: "1rem",
-                  borderRadius: "12px",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                  padding: isMobile ? "0.9rem" : "1rem",
+                  borderRadius: "16px",
+                  boxShadow: "0 6px 20px rgba(0,0,0,0.05)",
+                  border: "1px solid #eef2f7"
                 }}
               >
-                <p style={{ color: "#6b7280", marginBottom: "0.5rem" }}>
+                <p style={{ color: "#9ca3af", marginBottom: "0.4rem", fontSize:"0.8rem" }}>
                   Data Coverage
                 </p>
-                <h3 style={{ margin: 0, fontSize: "1rem" }}>
-                  {summary.start_date}
+                <h3 style={{ margin: 0, fontSize:"1.2rem", color:"#111827" }}>
+                  {summary.start_date.slice(0,7)}
                 </h3>
-                <p> to </p>
-                <h3 style={{ margin: 0, fontSize: "1rem" }}>
-                  {summary.end_date}
+                <p style={{ color: "#9ca3af", fontSize:"0.8rem" }}> to </p> 
+                <h3 style={{ margin: 0, fontSize:"1.2rem", color:"#111827" }}>
+                  {summary.end_date.slice(0,7)}
                 </h3>
               </div>
             </div>
@@ -211,34 +250,43 @@ function App() {
         </section>
 
         {/* Chart Section */}
+        <div style={{ width:"100%", marginBottom:"1rem", display:"flex", alignItems:"start"}}>
+              <h2 style={{color: "#6b7280"}}>Trend Chart</h2> 
+        </div>
         <section
           style={{
             background: "white",
-            padding: "1.5rem",
-            borderRadius: "16px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            padding: isMobile ? "1rem" : "1.5rem",
+            borderRadius: "18px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
+            border: "1px solid #eef2f7"
           }}
         >
+          
           <div
             style={{
               display: "flex",
               flexDirection: isMobile ? "column" : "row",
               justifyContent: "space-between",
-              alignItems: "center",
+              alignItems: isMobile ? "stretch" : "center",
               marginBottom: "1rem",
               gap: "1rem",
               flexWrap: "wrap",
             }}
           >
-            <div>
-              <h2 style={{color: "#6b7280", marginBottom: "1rem" }}>Trend Chart</h2>
-              <p style={{ color: "#6b7280", marginTop: "0.5rem" }}>
-                Current metric: {metric.toUpperCase()}
-              </p>
+         
+        
+            
+            <div style={{ width:"100%", display:"flex", alignItems:"flex-start"}}>
+              <p style={{ color: "#6b7280"}}>
+                Columbia, MO - {metric.toUpperCase()} - {timeseries.length} records
+              </p>   
             </div>
-
-            <div>
-              <label htmlFor="metric-select" style={{ marginRight: "0.5rem" }}>
+              
+            
+       
+            <div style={{display: "flex", alignItems:"flex-end"}}>
+              <label htmlFor="metric-select" style={{ marginRight: "0.5rem", color:"#94a3b8", fontWeight:600, fontSize:"0.8rem" }}>
                 Metric:
               </label>
               <select
@@ -246,16 +294,25 @@ function App() {
                 value={metric}
                 onChange={(e) => setMetric(e.target.value)}
                 style={{
-                  padding: "0.5rem 0.75rem",
-                  borderRadius: "8px",
-                  border: "1px solid #d1d5db",
-                  background: "white",
+                  padding: "0.4rem 0.9rem",
+                  borderRadius: "12px",
+                  border: "1px solid #e5e7eb",
+                  background: "#ffffff",
+                  color:"#111827",
+                  fontWeight:500,
+                  fontSize:"0.8rem",
+                  outline:"none",
+                  appearance:"none",
+                  WebkitAppearance:"none",
+                  MozAppearance:"none",
+                  marginTop: isMobile ? "0.5rem" : 0
                 }}
               >
                 <option value="zhvi">ZHVI</option>
                 <option value="hpi">HPI</option>
               </select>
             </div>
+           
           </div>
 
           {loading ? (
@@ -264,27 +321,47 @@ function App() {
             <div style={{ width: "100%", marginTop: "1rem" }}>
               <ResponsiveContainer width="100%" height={isMobile? 200 : 420}>
                 <LineChart data={timeseries}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: isMobile ? "0.8rem" : "1rem" }} minTickGap={30} />
+                  <defs>
+                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6b7c93" stopOpacity={0.24}/>
+                      <stop offset="95%" stopColor="#6b7c93" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                 
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false}/>
+                  <XAxis 
+                    dataKey="date" 
+                    tick={{ fontSize: isMobile ? 9 : 11, fill: "#94a3b8" }} 
+                    minTickGap={isMobile ? 50 : 32} 
+                    tickFormatter={formatDate}
+                    axisLine={false}
+                    tickLine={false}/>
                   <YAxis
                     type="number"
                     domain={["dataMin", "dataMax"]}
-                    tick={{ fontSize: isMobile ? "0.8rem" : "1rem" }}
+                    tick={{ fontSize: isMobile ? 9 : 11, fill:"#94a3b8" }}
                     tickFormatter={(value) =>
                       metric === "zhvi"
                         ? `$${Math.round(value / 1000)}k`
                         : value.toFixed(0)
                     }
+                    axisLine={false}
+                    tickLine={false}
+                    width={isMobile ? 46 : 62}
                   />
                   <Tooltip
                     formatter={(value) => formatValue(value, metric)}
                     labelFormatter={(label) => `Date: ${formatDate(label)}`}
+                    content={<CustomTooltip metric={metric}/>}
                   />
+                 
                   <Line
                     type="monotone"
                     dataKey="value"
-                    strokeWidth={2}
+                    stroke="#50a6c5"
+                    strokeWidth={3}
                     dot={false}
+                    activeDot={{ r: 6, stroke: "#6b7c93", strokeWidth: 2, fill: "#fff"}}
                     isAnimationActive={false}
                   />
                 </LineChart>
