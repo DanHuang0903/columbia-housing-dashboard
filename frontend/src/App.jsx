@@ -118,7 +118,7 @@ function App() {
         backdropFilter: "blur(9px)"
       }}>
         <p style={{ margin: 0, color: "#94a3b8", fontSize: "0.78rem"}}>{date}</p>
-        <p style={{ margin: "0.35rem 0 0", fontWeight: 700, color: "#111827"}}>{formattedValue}</p>
+        <p style={{ margin: "0.35rem 0 0", fontWeight: 700, color: "#6b7c93"}}>{formattedValue}</p>
       </div>
     );
     }
@@ -251,6 +251,14 @@ function App() {
 
         {/* Chart Section */}
         <div style={{ width:"100%", marginBottom:"1rem", display:"flex", alignItems:"start"}}>
+            <span
+              style={{
+                width: "6px",
+                height: "6px",
+                background: "#50a6c5",
+                borderRadius: "50%",
+              }}
+              />
               <h2 style={{color: "#6b7280"}}>Trend Chart</h2> 
         </div>
         <section
@@ -361,7 +369,7 @@ function App() {
                     stroke="#50a6c5"
                     strokeWidth={3}
                     dot={false}
-                    activeDot={{ r: 6, stroke: "#6b7c93", strokeWidth: 2, fill: "#fff"}}
+                    activeDot={{ r: 6, stroke: "#4a93ad", strokeWidth: 2, fill: "#fff"}}
                     isAnimationActive={false}
                   />
                 </LineChart>
