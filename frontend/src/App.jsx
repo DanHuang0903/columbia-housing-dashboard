@@ -268,6 +268,38 @@ function App() {
   const annualChangeData = metric === "zhvi" ? getAnnualChangeData(timeseries) : [];
   console.log(annualChangeData);
 
+  function BarTooltip({ active, payload, label }) {
+    if (!active || !payload || !payload.length) return null;
+  
+    const value = payload[0].value;
+    const isPositive = value >= 0;
+  
+    return (
+      <div
+        style={{
+          background: "rgba(255,255,255,0.98)",
+          border: "1px solid #e5e7eb",
+          borderRadius: "14px",
+          padding: "0.8rem 0.95rem",
+          boxShadow: "0 14px 36px rgba(15,23,42,0.12)",
+        }}
+      >
+        <p style={{ margin: 0, color: "#94a3b8", fontSize: "0.78rem" }}>
+          Year: {label}
+        </p>
+        <p
+          style={{
+            margin: "0.35rem 0 0",
+            color: "#6b7c93",
+            fontWeight: 700,
+          }}
+        >
+          {value >= 0 ? "+" : ""}${Math.round(value).toLocaleString()}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
@@ -539,7 +571,7 @@ function App() {
                 style={{
                   margin: 0,
                   fontSize: isMobile ? "1.1rem" : "1.3rem",
-                  color: "#111827",
+                  color: "#6b7280",
                 }}
               >
                 Annual ZHVI Change
@@ -552,13 +584,13 @@ function App() {
                   fontSize: isMobile ? "0.85rem" : "0.9rem",
                 }}
               >
-                Year-over-year change in Columbia, MO home values
+                Year-over-year change of typical home values in Columbia, MO 
               </p>
             </div>
 
             <ResponsiveContainer width="100%" height={isMobile ? 280 : 320}>
               <BarChart data={annualChangeData}>
-                <CartesianGrid vertical={false} stroke="#eef2f7" />
+                <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis
                   dataKey="year"
                   tick={{ fill: "#94a3b8", fontSize: isMobile ? 9 : 11 }}
@@ -571,10 +603,10 @@ function App() {
                   tickLine={false}
                   tickFormatter={(value) => `$${Math.round(value / 1000)}k`}
                   width={isMobile ? 45 : 60}
+                  domain={["auto", "auto"]}
                 />
                 <Tooltip
-                  formatter={(value) => `$${Number(value).toLocaleString()}`}
-                  labelFormatter={(label) => `Year: ${label}`}
+                  content={<BarTooltip/>}
                 />
                 <Bar dataKey="change" radius={[6, 6, 0, 0]}>
                   {annualChangeData.map((entry, index) => (
