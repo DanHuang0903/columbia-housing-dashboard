@@ -6,8 +6,8 @@ import pandas as pd
 zillow = pd.read_csv("../data/raw/Metro_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv")
 
 #read first few rows
-#print("========== HEAD ===========")
-#print(zillow.head(2))
+print("========== HEAD ===========")
+print(zillow.head(2))
 
 #show columns
 #print("\n =========== COLUMN ===========")

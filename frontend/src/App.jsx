@@ -310,8 +310,8 @@ function App() {
         color: "#1f2937",
       }}
     >
-   
-      <div style={{ margin: "0 auto" }}>
+
+      <div style={{ margin: "0 auto"}}>
         {/* Header */}
 
         <header style={{marginBottom: "3rem"}}>
@@ -327,7 +327,7 @@ function App() {
             Columbia, MO housing trends using Zillow ZHVI and FRED HPI data.
           </p>
         </header>
-        <hr style={{ marginBottom: "3rem", color: "#9ca3af" }}/>
+        <hr style={{ marginBottom: "3rem", color: "#9ca3af"}}/>
 
         {/* Summary Cards */}
         <section style={{ marginBottom: "2rem", marginTop:"1rem"}}>
