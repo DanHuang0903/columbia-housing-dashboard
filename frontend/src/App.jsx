@@ -3,6 +3,9 @@ import {
   LineChart,
   Line,
   Area,
+  BarChart,
+  Bar,
+  Cell,
   XAxis,
   YAxis,
   Tooltip,
@@ -234,7 +237,36 @@ function App() {
       );
     }
 
+    function getAnnualChangeData(data) {
+      if (!data || data.length === 0) return [];
+    
+      const yearlyMap = {};
+    
+      data.forEach((item) => {
+        const year = new Date(item.date).getFullYear();
+        yearlyMap[year] = item.value;
+      });
+    
+      const years = Object.keys(yearlyMap).sort();
+      const result = [];
+    
+      for (let i = 1; i < years.length; i++) {
+        const currentYear = years[i];
+        const prevYear = years[i - 1];
+    
+        const change = yearlyMap[currentYear] - yearlyMap[prevYear];
+    
+        result.push({
+          year: currentYear,
+          change: Math.round(change),
+        });
+      }
+    
+      return result;
+    }
 
+  const annualChangeData = metric === "zhvi" ? getAnnualChangeData(timeseries) : [];
+  console.log(annualChangeData);
 
   return (
     <div
@@ -490,6 +522,73 @@ function App() {
             </div>
           )}
         </section>
+
+        {metric === "zhvi" && (
+          <section
+            style={{
+              background: "#ffffff",
+              padding: isMobile ? "1rem" : "1.4rem",
+              borderRadius: "20px",
+              border: "1px solid #eef2f7",
+              boxShadow: "0 12px 32px rgba(15,23,42,0.06)",
+              marginTop: "1.5rem",
+            }}
+          >
+            <div style={{ marginBottom: "1rem" }}>
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: isMobile ? "1.1rem" : "1.3rem",
+                  color: "#111827",
+                }}
+              >
+                Annual ZHVI Change
+              </h2>
+              <p
+                style={{
+                  color: "#94a3b8",
+                  marginTop: "0.45rem",
+                  marginBottom: 0,
+                  fontSize: isMobile ? "0.85rem" : "0.9rem",
+                }}
+              >
+                Year-over-year change in Columbia, MO home values
+              </p>
+            </div>
+
+            <ResponsiveContainer width="100%" height={isMobile ? 280 : 320}>
+              <BarChart data={annualChangeData}>
+                <CartesianGrid vertical={false} stroke="#eef2f7" />
+                <XAxis
+                  dataKey="year"
+                  tick={{ fill: "#94a3b8", fontSize: isMobile ? 9 : 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fill: "#94a3b8", fontSize: isMobile ? 9 : 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(value) => `$${Math.round(value / 1000)}k`}
+                  width={isMobile ? 45 : 60}
+                />
+                <Tooltip
+                  formatter={(value) => `$${Number(value).toLocaleString()}`}
+                  labelFormatter={(label) => `Year: ${label}`}
+                />
+                <Bar dataKey="change" radius={[6, 6, 0, 0]}>
+                  {annualChangeData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.change >=0 ? "#c3eac6" : "#f36273"}
+                    />
+                  ))}
+                </Bar>
+                
+              </BarChart>
+            </ResponsiveContainer>
+          </section>
+        )}
 
         {error && (
           <p style={{ color: "red", marginTop: "1rem" }}>
