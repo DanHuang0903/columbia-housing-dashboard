@@ -47,7 +47,7 @@ function App() {
 
   async function fetchSummary() {
     try {
-      const res = await fetch("http://127.0.0.1:8000/summary");
+      const res = await fetch("https://columbia-housing-dashboard.onrender.com/summary");
       const data = await res.json();
       console.log(data);
       setSummary(data);
@@ -65,7 +65,7 @@ function App() {
       setLoading(true);
 
       const res = await fetch(
-        `http://127.0.0.1:8000/timeseries?metric_name=${selectedMetric}`
+        `https://columbia-housing-dashboard.onrender.com/timeseries?metric_name=${selectedMetric}`
       );
 
       const data = await res.json();
