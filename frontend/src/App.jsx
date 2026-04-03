@@ -47,7 +47,7 @@ function App() {
 
   async function fetchSummary() {
     try {
-      const res = await fetch("https://columbia-housing-dashboard.onrender.com/summary");
+      const res = await fetch("http://columbia-housing-dashboard.onrender.com/summary");
       const data = await res.json();
       console.log(data);
       setSummary(data);
@@ -65,7 +65,7 @@ function App() {
       setLoading(true);
 
       const res = await fetch(
-        `https://columbia-housing-dashboard.onrender.com/timeseries?metric_name=${selectedMetric}`
+        `http://columbia-housing-dashboard.onrender.com/timeseries?metric_name=${selectedMetric}`
       );
 
       const data = await res.json();
@@ -503,7 +503,7 @@ function App() {
           {loading ? (
             <p>Loading time series...</p>
           ) : (
-            <div style={{ width: "100%", marginTop: "1rem" }}>
+            <div style={{ width: "100%", marginTop: "1rem" }} className = "chart-card no-tap-highlight">
               <ResponsiveContainer width="100%" height={isMobile? 200 : 420}>
                 <LineChart data={timeseries}>
                   <defs>
@@ -587,7 +587,7 @@ function App() {
                 Year-over-year change of typical home values in Columbia, MO 
               </p>
             </div>
-
+            <div className = "chart-card no-tap-highlight">
             <ResponsiveContainer width="100%" height={isMobile ? 280 : 320}>
               <BarChart data={annualChangeData}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -619,6 +619,7 @@ function App() {
                 
               </BarChart>
             </ResponsiveContainer>
+            </div>
           </section>
         )}
 
