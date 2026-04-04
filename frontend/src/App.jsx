@@ -11,6 +11,8 @@ import {
   Tooltip,
   CartesianGrid,
   ResponsiveContainer,
+  ComposedChart,
+  Legend
 } from "recharts";
 
 function App() {
@@ -21,6 +23,8 @@ function App() {
   const [error, setError] = useState("");
   const [selectedMetric, setSelectedMetric] = useState("zhvi");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [marketData, setMarketData] = useState([]);
+  const [range, setRange] = useState("12");
   const isMobile = windowWidth < 768;
 
   const zhviDescription = "ZHVI stands for Zillow Home Value Index. It represents the typical home value in a given region, estimated by Zillow.";
@@ -33,6 +37,12 @@ function App() {
   useEffect(() => {
     fetchTimeseries(metric);
   }, [metric]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/market-overview")
+      .then(res => res.json())
+      .then(data => setMarketData(data));
+  }, []);
 
   useEffect(() => {
     function handleResize(){
@@ -300,6 +310,89 @@ function App() {
     );
   }
 
+  function MarketTooltip({ active, payload, label }) {
+    if (!active || !payload || !payload.length) return null;
+  
+    const row = payload[0].payload;
+  
+    const date = new Date(label).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+    });
+  
+    return (
+      <div
+        style={{
+          background: "rgba(255,255,255,0.98)",
+          border: "1px solid #e5e7eb",
+          borderRadius: "14px",
+          padding: "0.8rem 0.95rem",
+          boxShadow: "0 14px 36px rgba(15,23,42,0.12)",
+        }}
+      >
+        <p style={{ margin: 0, color: "#94a3b8", fontSize: "0.78rem" }}>
+          {date}
+        </p>
+  
+        <p style={{ margin: "0.35rem 0 0", fontWeight: 700, color:"#6b7c93" }}>
+          Inventory: {row.inventory}
+        </p>
+  
+        {!isMobile && (
+          <p style={{ margin: "0.2rem 0 0", fontWeight: 700, color:"#6b7c93" }}>
+            New Listings: {row.new_listings}
+          </p>
+        )}
+  
+        <p style={{ margin: "0.2rem 0 0", fontWeight: 700, color:"#6b7c93"  }}>
+          Sales Count: {row.sales_count}
+        </p>
+      </div>
+    );
+  }
+
+
+  function getFilteredData() {
+      if (range === "all") return marketData;
+    
+      const months = parseInt(range);
+      return marketData.slice(-months);
+    }
+    
+  const filteredMarketData = getFilteredData();
+  console.log(filteredMarketData);
+  const desktopBarSize =
+  range === "12" ? 30 :
+  range === "24" ? 14 :
+  range === "36" ? 10 :
+  8;
+  const labelStyle = {
+    color: "#9ca3af",
+    fontSize: "0.75rem",
+    fontWeight: 600,
+    marginBottom: "0.3rem",
+  };
+  
+  const valueStyle = {
+    margin: 0,
+    fontSize: isMobile ? "1rem" : "1.2rem",
+    fontWeight: 700,
+    color: "#111827",
+  };
+  
+  const subStyle = {
+    marginTop: "0.3rem",
+    color: "#94a3b8",
+    fontSize: "0.75rem",
+  };
+  const cardStyle = {
+    background: "#ffffff",
+    padding: isMobile ? "0.9rem" : "1rem",
+    borderRadius: "18px",
+    border: "1px solid #eef2f7",
+    boxShadow: "0 6px 18px rgba(15,23,42,0.05)",
+  };
+
   return (
     <div
       style={{
@@ -331,95 +424,104 @@ function App() {
 
         {/* Summary Cards */}
         <section style={{ marginBottom: "2rem", marginTop:"1rem"}}>
-        <div style={{ width:"100%", display:"flex", alignItems:"flex-start", marginBottom:"1rem"}}>
-          <h2 style={{ marginBottom: "1rem", color: "#6b7280"}}>Summary</h2>
+        <div style={{ marginBottom: "1.2rem" }}>
+            <h2
+              style={{
+                margin: 0,
+                textAlign: "start",
+                fontSize: isMobile ? "1.1rem" : "1.5rem",
+                color: "#6b7280",
+                fontWeight: 600,
+              }}
+            >
+              Summary
+            </h2>
+
+            <p
+              style={{
+                margin: "0.45rem 0 0",
+                textAlign: "start",
+                color: "#94a3b8",
+                fontSize: isMobile ? "0.85rem" : "0.9rem",
+              }}
+            >
+              Key housing indicators and data coverage
+            </p>
           </div>
 
           {summary ? (
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(220px, 1fr))",
+                gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fit, minmax(220px, 1fr))",
                 gap: "1rem",
               }}
             >
-              <div
-                style={{
-                  background: "#ffffff",
-                  padding: isMobile ? "1rem" : "1.1rem",
-                  borderRadius: "18px",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
-                  border: "1px solid #f1f5f9"
-                }}
-              >
-                <p style={{ color: "#9ca3af", marginBottom: "0.4rem", fontSize:"0.8rem" }}>
-                  Total Months
+              <div style={cardStyle}>
+                <p style={labelStyle}>Latest ZHVI
+                <InfoTooltip text={zhviDescription} isMobile={isMobile}/>
                 </p>
-                <h3 style={{ margin: 0, fontSize:"1.2rem", color:"#111827" }}>{summary.total_rows}</h3>
-              </div>
-
-              <div
-                style={{
-                  background: "#ffffff",
-                  padding: isMobile ? "1rem" : "1.1rem",
-                  borderRadius: "18px",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
-                  border: "1px solid #f1f5f9"
-                }}
-              >
-                <p style={{ color: "#9ca3af", marginBottom: "0.4rem", fontSize:"0.8rem", alignItems:"center" }}>
-                  Latest ZHVI
-                  <InfoTooltip text={zhviDescription} isMobile={isMobile}/>
-                </p>
-                <h3 style={{ margin: 0, fontSize:"1.2rem", color:"#111827" }}>
+                <h3 style={valueStyle}>
                   {formatValue(summary.latest_zhvi?.value, "zhvi")}
                 </h3>
-                <p style={{ marginTop: "0.4rem", color: "#9ca3af", fontSize:"0.85rem" }}>
-                  {summary.latest_zhvi?.date}
+                <p style={subStyle}>
+                  {summary.latest_zhvi?.date?.slice(0, 7)}
+                </p>
+              </div>
+              <div style={cardStyle}>
+                <p style={labelStyle}>Latest HPI
+                <InfoTooltip text={hpiDescription} isMobile={isMobile}/>
+                </p>
+                <h3 style={valueStyle}>
+                  {formatValue(summary.latest_hpi?.value, "zhiv")}
+                </h3>
+                <p style={subStyle}>
+                  {summary.latest_hpi?.date?.slice(0, 7)}
                 </p>
               </div>
 
-              <div
-                style={{
-                  background: "#ffffff",
-                  padding: isMobile ? "1rem" : "1.1rem",
-                  borderRadius: "18px",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
-                  border: "1px solid #f1f5f9"
-                }}
-              >
-                <p style={{ color: "#9ca3af", marginBottom: "0.4rem", fontSize:"0.8rem", alignItems:"center"}}>
-                  Latest HPI
-                  <InfoTooltip text={hpiDescription} isMobile={isMobile}/>
+              <div style={cardStyle}>
+                <p style={labelStyle}>Latest Annal Price Change
                 </p>
-                <h3 style={{ margin: 0, fontSize:"1.2rem", color:"#111827" }}>
-                  {formatValue(summary.latest_hpi?.value, "hpi")}
+                <h3 style={valueStyle}>
+                  ${annualChangeData[annualChangeData.length - 1].change}
                 </h3>
-                <p style={{ color: "#9ca3af", marginBottom: "0.4rem", fontSize:"0.8rem" }}>
-                  {summary.latest_hpi?.date}
+                <p style={subStyle}>
+                {annualChangeData[annualChangeData.length - 2].year} to {annualChangeData[annualChangeData.length - 1].year}
                 </p>
               </div>
 
-              <div
-                style={{
-                  background: "white",
-                  padding: isMobile ? "0.9rem" : "1rem",
-                  borderRadius: "16px",
-                  boxShadow: "0 6px 20px rgba(0,0,0,0.05)",
-                  border: "1px solid #eef2f7"
-                }}
-              >
-                <p style={{ color: "#9ca3af", marginBottom: "0.4rem", fontSize:"0.8rem" }}>
-                  Data Coverage
+              <div style={cardStyle}>
+                <p style={labelStyle}>Latest Inventory
                 </p>
-                <h3 style={{ margin: 0, fontSize:"1.2rem", color:"#111827" }}>
-                  {summary.start_date.slice(0,7)}
+                <h3 style={valueStyle}>
+                  {filteredMarketData[filteredMarketData.length - 1].inventory}
                 </h3>
-                <p style={{ color: "#9ca3af", fontSize:"0.8rem" }}> to </p> 
-                <h3 style={{ margin: 0, fontSize:"1.2rem", color:"#111827" }}>
-                  {summary.end_date.slice(0,7)}
-                </h3>
+                <p style={subStyle}>
+                  {filteredMarketData[filteredMarketData.length - 1].date}
+                </p>
               </div>
+              <div style={cardStyle}>
+                <p style={labelStyle}>Latest New Listings
+                </p>
+                <h3 style={valueStyle}>
+                  {filteredMarketData[filteredMarketData.length - 1].new_listings}
+                </h3>
+                <p style={subStyle}>
+                  {filteredMarketData[filteredMarketData.length - 1].date}
+                </p>
+              </div>
+              <div style={cardStyle}>
+                <p style={labelStyle}>Latest Sales Counts
+                </p>
+                <h3 style={valueStyle}>
+                  {filteredMarketData[filteredMarketData.length - 1].sales_count}
+                </h3>
+                <p style={subStyle}>
+                  {filteredMarketData[filteredMarketData.length - 1].date}
+                </p>
+              </div>
+             
             </div>
           ) : (
             <p>Loading summary...</p>
@@ -427,17 +529,30 @@ function App() {
         </section>
 
         {/* Chart Section */}
-        <div style={{ width:"100%", marginBottom:"1rem", display:"flex", alignItems:"start"}}>
-            <span
+        <div style={{ margin: "2rem 0 1.2rem" }}>
+            <h2
               style={{
-                width: "6px",
-                height: "6px",
-                background: "#50a6c5",
-                borderRadius: "50%",
+                margin: 0,
+                textAlign: "start",
+                fontSize: isMobile ? "1.1rem" : "1.5rem",
+                color: "#6b7280",
+                fontWeight: 600,
               }}
-              />
-              <h2 style={{color: "#6b7280"}}>Trend Chart</h2> 
-        </div>
+            >
+              Columbia Housing Trends
+            </h2>
+
+            <p
+              style={{
+                margin: "0.45rem 0 0",
+                textAlign: "start",
+                color: "#94a3b8",
+                fontSize: isMobile ? "0.85rem" : "0.9rem",
+              }}
+            >
+              Market indicators and trends for Columbia, MO
+            </p>
+          </div>
         <section
           style={{
             background: "white",
@@ -447,57 +562,96 @@ function App() {
             border: "1px solid #eef2f7"
           }}
         >
-          
-          <div
-            style={{
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              justifyContent: "space-between",
-              alignItems: isMobile ? "stretch" : "center",
-              marginBottom: "1rem",
-              gap: "1rem",
-              flexWrap: "wrap",
-            }}
-          >
-         
-        
-            
-            <div style={{ width:"100%", display:"flex", alignItems:"flex-start"}}>
-              <p style={{ color: "#94a3b8"}}>
-                Columbia, MO - {metric.toUpperCase() == "ZHVI" ? "Typical home value estimated by Zillow" : "Index-based measure of home price changes over time"}  - {timeseries.length} records
-              </p>   
-            </div>
-              
-            
-       
-            <div style={{display: "flex", alignItems:"flex-end"}}>
-              <label htmlFor="metric-select" style={{ marginRight: "0.5rem", color:"#94a3b8", fontWeight:600, fontSize:"0.8rem" }}>
-                Metric:
-              </label>
-              <select
-                id="metric-select"
-                value={metric}
-                onChange={(e) => setMetric(e.target.value)}
+
+          <div style={{ marginBottom: "1.25rem" }}>
+            <h2
+              style={{
+                margin: 0,
+                textAlign: "center",
+                fontSize: isMobile ? "1.1rem" : "1.3rem",
+                color: "#6b7280",
+              }}
+            >
+              Trend Chart
+            </h2>
+
+            <p
+              style={{
+                margin: "0.45rem 0 0",
+                textAlign: "center",
+                color: "#94a3b8",
+                fontSize: isMobile ? "0.85rem" : "0.9rem",
+                lineHeight: 1.5,
+              }}
+            >
+              Columbia, MO ·{" "}
+              {metric === "zhvi"
+                ? "Typical home value estimated by Zillow"
+                : "Index-based measure of home price changes over time"}{" "}
+              · {timeseries.length} records
+            </p>
+            <div
+              style={{
+                marginTop: "1rem",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: "0.75rem",
+              }}
+            >
+              {/* legend */}
+              <div
                 style={{
-                  padding: "0.4rem 0.9rem",
-                  borderRadius: "12px",
-                  border: "1px solid #e5e7eb",
-                  background: "#ffffff",
-                  color:"#111827",
-                  fontWeight:500,
-                  fontSize:"0.8rem",
-                  outline:"none",
-                  appearance:"none",
-                  WebkitAppearance:"none",
-                  MozAppearance:"none",
-                  marginTop: isMobile ? "0.5rem" : 0
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontSize: isMobile ? "0.78rem" : "0.85rem",
+                  color: "#6b7280",
                 }}
               >
-                <option style={{ color: "#6b7280"}} value="zhvi">ZHVI</option>
-                <option style={{ color: "#6b7280"}} value="hpi">HPI</option>
-              </select>
+                <div
+                  style={{
+                    width: "16px",
+                    height: "2px",
+                    background: "#60a5fa",
+                    borderRadius: "999px",
+                  }}
+                />
+                <span>Typical Home Value</span>
+              </div>
+
+              {/* dropdown */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span
+                  style={{
+                    color: "#94a3b8",
+                    fontWeight: 600,
+                    fontSize: "0.82rem",
+                  }}
+                >
+                  Metric
+                </span>
+
+                <select
+                  value={metric}
+                  onChange={(e) => setMetric(e.target.value)}
+                  style={{
+                    padding: "0.4rem 0.9rem",
+                    borderRadius: "12px",
+                    border: "1px solid #e5e7eb",
+                    background: "#ffffff",
+                    color: "#111827",
+                    fontSize: "0.8rem",
+                    outline: "none",
+                  }}
+                >
+                  <option value="zhvi">ZHVI</option>
+                  <option value="hpi">HPI</option>
+                </select>
+              </div>
             </div>
-           
+    
           </div>
 
           {loading ? (
@@ -587,6 +741,38 @@ function App() {
                 Year-over-year change of typical home values in Columbia, MO 
               </p>
             </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "14px",
+                alignItems: "center",
+                fontSize: isMobile ? "0.78rem" : "0.85rem",
+                color: "#6b7280",
+                marginBottom: "0.8rem",
+              }}
+            >
+              <div
+                style={{
+                  width: "10px",
+                  height: "10px",
+                  background: "#c3eac6",
+                  borderRadius: "3px",
+                }}
+              />
+            <span>Incresed Value</span>
+            <div
+                style={{
+                  width: "10px",
+                  height: "10px",
+                  background: "#f36273",
+                  borderRadius: "3px",
+                }}
+              />
+            <span>Decresed Value</span>
+          </div>
+          </div>
             <div className = "chart-card no-tap-highlight">
             <ResponsiveContainer width="100%" height={isMobile ? 280 : 320}>
               <BarChart data={annualChangeData}>
@@ -622,6 +808,194 @@ function App() {
             </div>
           </section>
         )}
+      <section
+        style={{
+          background: "#ffffff",
+          padding: isMobile ? "1rem" : "1.4rem",
+          borderRadius: "20px",
+          border: "1px solid #eef2f7",
+          boxShadow: "0 12px 32px rgba(15,23,42,0.06)",
+          marginTop: "1.5rem",
+        }}
+      >
+       <div style={{ marginBottom: "1.25rem" }}>
+        <h2
+          style={{
+            margin: 0,
+            textAlign: "center",
+            fontSize: isMobile ? "1.1rem" : "1.3rem",
+            color: "#6b7280",
+          }}
+        >
+          Market Overview
+        </h2>
+
+        <p
+          style={{
+            margin: "0.45rem 0 0",
+            textAlign: "center",
+            color: "#94a3b8",
+            fontSize: isMobile ? "0.85rem" : "0.9rem",
+          }}
+        >
+          Inventory, new listings, and sales activity in Columbia, MO
+        </p>
+
+        <div
+          style={{
+            marginTop: "1rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "0.75rem",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "14px",
+              alignItems: "center",
+              fontSize: isMobile ? "0.78rem" : "0.85rem",
+              color: "#6b7280",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <div
+                style={{
+                  width: "10px",
+                  height: "10px",
+                  background: "#8884d8",
+                  borderRadius: "3px",
+                }}
+              />
+              <span>Inventory</span>
+            </div>
+
+            {!isMobile && (
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <div
+                  style={{
+                    width: "10px",
+                    height: "10px",
+                    background: "#82ca9d",
+                    borderRadius: "3px",
+                  }}
+                />
+                <span>New Listings</span>
+              </div>
+            )}
+
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <div
+                style={{
+                  width: "16px",
+                  height: "2px",
+                  background: "#f59e0b",
+                  borderRadius: "999px",
+                }}
+              />
+              <span>Sales Count</span>
+            </div>
+          </div>
+
+          <select
+            value={range}
+            onChange={(e) => setRange(e.target.value)}
+            style={{
+              padding: "0.4rem 0.9rem",
+              borderRadius: "12px",
+              border: "1px solid #e5e7eb",
+              background: "#ffffff",
+              color: "#111827",
+              fontSize: "0.8rem",
+              outline: "none",
+            }}
+          >
+            <option value="12">Last 12 Months</option>
+            <option value="24">Last 24 Months</option>
+            <option value="36">Last 36 Months</option>
+            <option value="all">All</option>
+          </select>
+        </div>
+      </div>
+       
+      
+        <div className = "chart-card no-tap-highlight">
+        <ResponsiveContainer width="100%" height={isMobile ? 300 : 360}>
+          <ComposedChart data={filteredMarketData} barGap={8}>
+            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#e5e7eb" />
+
+            <XAxis
+              dataKey="date"
+              tick={{ fill: "#94a3b8", fontSize: isMobile ? 9 : 11 }}
+              axisLine={false}
+              tickLine={false}
+              minTickGap={isMobile ? 24 : 18}
+              tickFormatter={(value) => {
+                const d = new Date(value);
+                return d.toLocaleDateString("en-US", {
+                  month: "short",
+                  ...(isMobile ? {} : { year: "2-digit" }),
+                });
+              }}
+            />
+
+            <YAxis
+              yAxisId="left"
+              tick={{ fill: "#94a3b8", fontSize: isMobile ? 9 : 11 }}
+              axisLine={false}
+              tickLine={false}
+              width={isMobile ? 40 : 52}
+            />
+
+            <Tooltip content={<MarketTooltip />} />
+
+            <Bar
+              yAxisId="left"
+              dataKey="inventory"
+              fill="#8884d8"
+              radius={[8, 8, 0, 0]}
+              barSize={
+                range === "12" ? (isMobile ? 20 : 30) :
+                range === "24" ? (isMobile ? 14 : 14) :
+                range === "36" ? (isMobile ? 10 : 10) :
+                (isMobile ? 8 : 8)
+              }
+              name="Inventory"
+            />
+
+            {!isMobile && (
+              <Bar
+                yAxisId="left"
+                dataKey="new_listings"
+                fill="#82ca9d"
+                radius={[8, 8, 0, 0]}
+                barSize={
+                  range === "12" ? 30 :
+                  range === "24" ? 14 :
+                  range === "36" ? 10 :
+                  8
+                }
+                name="New Listings"
+              />
+            )}
+
+            <Line
+              yAxisId="left"
+              type="monotone"
+              dataKey="sales_count"
+              stroke="#f59e0b"
+              strokeWidth={3}
+              dot={isMobile ? { r: 2 } : { r: 3 }}
+              activeDot={{ r: 5 }}
+              name="Sales Count"
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+        </div>
+      </section>
 
         {error && (
           <p style={{ color: "red", marginTop: "1rem" }}>

@@ -78,11 +78,11 @@ columbia_final = columbia_final[["source", "region_name", "region_type", "state"
 #导入fred数据
 fred_columbia = pd.read_csv("../data/raw/fred_columbia_hpi.csv")
 
-print("============= FRED COLUMBIA HEAD ============")
-print(fred_columbia.head())
+# print("============= FRED COLUMBIA HEAD ============")
+# print(fred_columbia.head())
 
-print("\n=============== FRED COLUMBIA COLUMNS ===============")
-print(fred_columbia.columns)
+# print("\n=============== FRED COLUMBIA COLUMNS ===============")
+# print(fred_columbia.columns)
 
 #rename
 fred_columbia = fred_columbia.rename(columns = {
@@ -90,7 +90,7 @@ fred_columbia = fred_columbia.rename(columns = {
     "ATNHPIUS17860Q" : "value"
 })
 
-print(fred_columbia.columns)
+#print(fred_columbia.columns)
 
 #转换日期
 fred_columbia["date"] = pd.to_datetime(fred_columbia["date"])
@@ -108,18 +108,18 @@ fred_columbia_final = fred_columbia[
     ["source", "region_name", "region_type", "state", "metric_name", "date", "value"]
     ]
 
-print("\n================== FRED FINAL ==============")
-print(fred_columbia_final.head())
+# print("\n================== FRED FINAL ==============")
+# print(fred_columbia_final.head())
 
-print("\n============= FRED SHAPE ==============")
-print(fred_columbia_final.shape)
+# print("\n============= FRED SHAPE ==============")
+# print(fred_columbia_final.shape)
 
 #合并数据
 combined = pd.concat([columbia_final, fred_columbia_final], ignore_index=True)
 
-print(combined.head())
-print(combined.tail())
-print(combined["metric_name"].unique())
+# print(combined.head())
+# print(combined.tail())
+# print(combined["metric_name"].unique())
 
 #写数据到Postgresql数据库
 combined.to_sql(
@@ -129,4 +129,4 @@ combined.to_sql(
     index=False
 )
 
-print("\n=========== DATA WRITTEN TO DATABASE =========")
+# print("\n=========== DATA WRITTEN TO DATABASE =========")
