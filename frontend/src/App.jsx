@@ -39,7 +39,7 @@ function App() {
   }, [metric]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/market-overview")
+    fetch("https://columbia-housing-dashboard.onrender.com/market-overview")
       .then(res => res.json())
       .then(data => setMarketData(data));
   }, []);
