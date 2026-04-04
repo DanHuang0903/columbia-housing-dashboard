@@ -1140,8 +1140,8 @@ function App() {
 
             <div style={rowStyle}>
               <Mail size={16} />
-              <a href="mailto:dh4tx@missouri.edu" style={linkStyle}>
-                dh4tx@missouri.edu
+              <a href="mailto:dh4tx@umsystem.edu" style={linkStyle}>
+                dh4tx@umsystem.edu
               </a>
             </div>
 
