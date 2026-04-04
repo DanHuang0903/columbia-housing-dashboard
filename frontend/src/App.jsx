@@ -485,10 +485,10 @@ function App() {
                 <p style={labelStyle}>Latest Annal Price Change
                 </p>
                 <h3 style={valueStyle}>
-                  ${annualChangeData[annualChangeData.length - 1].change}
+                  $1501
                 </h3>
                 <p style={subStyle}>
-                {annualChangeData[annualChangeData.length - 2].year} to {annualChangeData[annualChangeData.length - 1].year}
+                2025 to 2026
                 </p>
               </div>
 
@@ -496,30 +496,30 @@ function App() {
                 <p style={labelStyle}>Latest Inventory
                 </p>
                 <h3 style={valueStyle}>
-                  {filteredMarketData[filteredMarketData.length - 1].inventory}
+                  670
                 </h3>
                 <p style={subStyle}>
-                  {filteredMarketData[filteredMarketData.length - 1].date}
+                  2026-2
                 </p>
               </div>
               <div style={cardStyle}>
                 <p style={labelStyle}>Latest New Listings
                 </p>
                 <h3 style={valueStyle}>
-                  {filteredMarketData[filteredMarketData.length - 1].new_listings}
+                  161
                 </h3>
                 <p style={subStyle}>
-                  {filteredMarketData[filteredMarketData.length - 1].date}
+                  2026-2
                 </p>
               </div>
               <div style={cardStyle}>
                 <p style={labelStyle}>Latest Sales Counts
                 </p>
                 <h3 style={valueStyle}>
-                  {filteredMarketData[filteredMarketData.length - 1].sales_count}
+                 179
                 </h3>
                 <p style={subStyle}>
-                  {filteredMarketData[filteredMarketData.length - 1].date}
+                  2026-2
                 </p>
               </div>
              
