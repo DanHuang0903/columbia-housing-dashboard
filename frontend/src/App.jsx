@@ -72,32 +72,46 @@ function App() {
   }
 
   async function fetchTimeseries(selectedMetric) {
-    try {
-      setLoading(true);
-
-      const res = await fetch(
-        `https://columbia-housing-dashboard.onrender.com/timeseries?metric_name=${selectedMetric}`
-      );
-
-      const data = await res.json();
-
-      const formatted = data
-        .map((d) => ({
-          ...d,
-          date: d.date.slice(0, 10),
-          value: Number(d.value),
-        }))
-        .filter((d) => !Number.isNaN(d.value));
-
-      setTimeseries(formatted);
-      setError("");
-    } catch (err) {
-      setError("Failed to load time series data.");
-    } finally {
-      setLoading(false);
+    let retries = 2;
+  
+    while (retries >= 0) {
+      try {
+        setLoading(true);
+  
+        const res = await fetch(
+          `https://columbia-housing-dashboard.onrender.com/timeseries?metric_name=${selectedMetric}`
+        );
+  
+        if (!res.ok) {
+          throw new Error("Request failed");
+        }
+  
+        const data = await res.json();
+  
+        const formatted = data
+          .map((d) => ({
+            ...d,
+            date: d.date.slice(0, 10),
+            value: Number(d.value),
+          }))
+          .filter((d) => !Number.isNaN(d.value));
+  
+        setTimeseries(formatted);
+        setError("");
+        return; // ✅ 成功直接退出
+      } catch (err) {
+        if (retries === 0) {
+          setError("Failed to load time series data.");
+        } else {
+          console.log("Retrying timeseries...", retries);
+          await new Promise((r) => setTimeout(r, 3000));
+        }
+        retries--;
+      } finally {
+        setLoading(false);
+      }
     }
   }
-
   function formatValue(value, metricName) {
     if (value == null) return "N/A";
 
