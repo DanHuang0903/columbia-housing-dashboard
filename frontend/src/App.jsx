@@ -98,7 +98,7 @@ function App() {
   
         setTimeseries(formatted);
         setError("");
-        return; // ✅ 成功直接退出
+        return; 
       } catch (err) {
         if (retries === 0) {
           setError("Failed to load time series data.");
