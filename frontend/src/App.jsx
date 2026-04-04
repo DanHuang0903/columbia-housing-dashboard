@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { Mail, Phone, MapPin,User,Building2 } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -393,6 +394,28 @@ function App() {
     border: "1px solid #eef2f7",
     boxShadow: "0 6px 18px rgba(15,23,42,0.05)",
   };
+  const rowStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    margin: "0.3rem 0",
+    opacity: 0.9,
+    fontSize: "0.9rem",
+  };
+  
+  const linkStyle = {
+    color: "#ffffff",
+    textDecoration: "none",
+    opacity: 0.9,
+  };
+  
+  const titleStyle = {
+    margin: 0,
+    marginBottom: "0.6rem",
+    fontSize: "1rem",
+    fontWeight: 600,
+    color: "#ffffff",
+  };
 
   return (
     <div
@@ -415,7 +438,7 @@ function App() {
             marginLeft: isMobile ? "-1rem" : "-2rem",
             marginRight: isMobile ? "-1rem" : "-2rem",
             marginTop: isMobile ? "-1rem" : "-2rem",
-            background: "linear-gradient(135deg, #7c6f66, #5f5953)",
+            background: "linear-gradient(135deg, #B8B4A3, #7a746c)",
             padding: isMobile ? "2rem 1rem" : "3rem 2rem",
             textAlign: "center",
           }}
@@ -1049,6 +1072,96 @@ function App() {
             {error}
           </p>
         )}
+      <footer
+        style={{
+          marginTop: isMobile ? "2rem" : "3rem",
+          marginLeft: isMobile ? "-1rem" : "-2rem",
+          marginRight: isMobile ? "-1rem" : "-2rem",
+          background: "linear-gradient(135deg, #B8B4A3, #7a746c)",
+          padding: isMobile ? "2rem 1rem" : "2.5rem 2rem",
+          color: "#f9fafb",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1000px",
+            margin: "0 auto",
+            display: "flex",
+            justifyContent: "space-between",
+            gap: "2rem",
+            flexWrap: "wrap",
+            textAlign:"start"
+          }}
+        >
+        <div style={{ minWidth: "220px" }}>
+          <h3 style={titleStyle}>Listing Agent</h3>
+
+          <div style={rowStyle}>
+            <User size={16} />
+            <span>Lihua He</span>
+          </div>
+
+          <div style={rowStyle}>
+            <Mail size={16} />
+            <a href="mailto:LH@c21community.com" style={linkStyle}>
+              LH@c21community.com
+            </a>
+          </div>
+
+          <div style={rowStyle}>
+            <Phone size={16} />
+            <a href="tel:5735294271" style={linkStyle}>
+              573.529.4271
+            </a>
+          </div>
+          <div style={rowStyle}>
+            <Building2 size={16} />
+            <span>Century 21 Community</span>
+          </div>
+          <div style={rowStyle}>
+            <MapPin size={16} />
+            <span>
+              111 E Broadway #100,  
+              Columbia, MO 65203
+            </span>
+          </div>
+
+         
+        </div>
+
+            
+          <div style={{ minWidth: "220px" }}>
+            <h3 style={titleStyle}>Developed By</h3>
+
+            <div style={rowStyle}>
+              <User size={16} />
+              <span>Dan Huang</span>
+            </div>
+
+            <div style={rowStyle}>
+              <Mail size={16} />
+              <a href="mailto:dh4tx@missouri.edu" style={linkStyle}>
+                dh4tx@missouri.edu
+              </a>
+            </div>
+
+           
+          </div>
+        </div>
+
+
+        <div
+          style={{
+            marginTop: "1.8rem",
+            textAlign: "center",
+            fontSize: "0.75rem",
+            opacity: 0.6,
+          }}
+        >
+          © {new Date().getFullYear()} Columbia Housing Dashboard
+        </div>
+      </footer>
+
       </div>
     </div>
   );
