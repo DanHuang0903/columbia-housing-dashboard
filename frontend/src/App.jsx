@@ -328,23 +328,24 @@ function App() {
           borderRadius: "14px",
           padding: "0.8rem 0.95rem",
           boxShadow: "0 14px 36px rgba(15,23,42,0.12)",
+          textAlign: "start",
         }}
       >
         <p style={{ margin: 0, color: "#94a3b8", fontSize: "0.78rem" }}>
           {date}
         </p>
   
-        <p style={{ margin: "0.35rem 0 0", fontWeight: 700, color:"#6b7c93" }}>
-          Inventory: {row.inventory}
+        <p style={{ margin: "0.35rem 0 0", fontWeight: 700, color:"#6b7c93",fontSize: "0.85rem"  }}>
+            Inventory: {row.inventory}
         </p>
   
         {!isMobile && (
-          <p style={{ margin: "0.2rem 0 0", fontWeight: 700, color:"#6b7c93" }}>
+          <p style={{ margin: "0.2rem 0 0", fontWeight: 700, color:"#6b7c93",fontSize: "0.85rem" }}>
             New Listings: {row.new_listings}
           </p>
         )}
   
-        <p style={{ margin: "0.2rem 0 0", fontWeight: 700, color:"#6b7c93"  }}>
+        <p style={{ margin: "0.2rem 0 0", fontWeight: 700, color:"#6b7c93",fontSize: "0.85rem"  }}>
           Sales Count: {row.sales_count}
         </p>
       </div>
@@ -400,7 +401,7 @@ function App() {
         background: "#f9fafb",
         padding: isMobile ? "1rem" : "2rem",
         fontFamily: "Arial, sans-serif",
-        color: "#1f2937",
+        color: "#5f5953",
         overflowX: "hidden"
       }}
     >
@@ -408,20 +409,47 @@ function App() {
       <div style={{ margin: "0 auto"}}>
         {/* Header */}
 
-        <header style={{marginBottom: "3rem"}}>
-          <h1 style={{ 
-            color: "#6b7280", 
-            marginBottom: "1.5rem", 
-            fontSize: isMobile ? "1.5rem" : "2rem",
-            lineHeight: isMobile ? 1.15 : 1.2,
+        <header
+          style={{
+            marginBottom: isMobile ? "2rem" : "3rem",
+            marginLeft: isMobile ? "-1rem" : "-2rem",
+            marginRight: isMobile ? "-1rem" : "-2rem",
+            marginTop: isMobile ? "-1rem" : "-2rem",
+            background: "linear-gradient(135deg, #7c6f66, #5f5953)",
+            padding: isMobile ? "2rem 1rem" : "3rem 2rem",
             textAlign: "center",
-            wordBreak: "break-word", 
-            }}>Columbia Housing Dashboard</h1>
-          <p style={{ color: "#6b7280", margin: "0.5rem" }}>
-            Columbia, MO housing trends using Zillow ZHVI and FRED HPI data.
+          }}
+        >
+          <h1
+            style={{
+              margin: 0,
+              color: "#fff",
+              fontSize: isMobile ? "1.9rem" : "3rem",
+              lineHeight: isMobile ? 1.15 : 1.12,
+              textAlign: "center",
+              fontWeight: 700,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Columbia Housing Dashboard
+          </h1>
+
+          <p
+            style={{
+              color: "rgba(255,255,255,0.85)",
+              margin: isMobile ? "0.9rem auto 0" : "1rem auto 0",
+              fontSize: isMobile ? "1rem" : "1.2rem",
+              lineHeight: isMobile ? 1.55 : 1.65,
+              textAlign: "center",
+              maxWidth: isMobile ? "300px" : "760px",
+              padding: isMobile ? "0 0.5rem" : 0,
+            }}
+          >
+            Market trends and listing insights for Columbia, MO using public housing
+            data and listing-level metrics. -- Lihua He
           </p>
         </header>
-        <hr style={{ marginBottom: "3rem", color: "#9ca3af"}}/>
+       
 
         {/* Summary Cards */}
         <section style={{ marginBottom: "2rem", marginTop:"1rem"}}>
@@ -530,7 +558,7 @@ function App() {
         </section>
 
         {/* Chart Section */}
-        <div style={{ margin: "2rem 0 1.2rem" }}>
+        <div style={{ margin: "5rem 0 1.2rem" }}>
             <h2
               style={{
                 margin: 0,
@@ -872,7 +900,7 @@ function App() {
                 style={{
                   width: "10px",
                   height: "10px",
-                  background: "#8884d8",
+                  background: "#95c9e1",
                   borderRadius: "3px",
                 }}
               />
@@ -885,7 +913,7 @@ function App() {
                   style={{
                     width: "10px",
                     height: "10px",
-                    background: "#82ca9d",
+                    background: "#d1efe3",
                     borderRadius: "3px",
                   }}
                 />
@@ -961,7 +989,7 @@ function App() {
             <Bar
               yAxisId="left"
               dataKey="inventory"
-              fill="#8884d8"
+              fill="#95c9e1"
               radius={[8, 8, 0, 0]}
               barSize={
                 range === "12" ? (isMobile ? 20 : 30) :
@@ -976,7 +1004,7 @@ function App() {
               <Bar
                 yAxisId="left"
                 dataKey="new_listings"
-                fill="#82ca9d"
+                fill="#d1efe3"
                 radius={[8, 8, 0, 0]}
                 barSize={
                   range === "12" ? 30 :
