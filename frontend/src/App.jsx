@@ -438,6 +438,20 @@ function App() {
             style={{
               color: "rgba(255,255,255,0.85)",
               margin: isMobile ? "0.9rem auto 0" : "1rem auto 0",
+              fontSize: isMobile ? "0.8rem" : "1rem",
+              lineHeight: isMobile ? 1.55 : 1.65,
+              textAlign: "center",
+              maxWidth: isMobile ? "300px" : "760px",
+              padding: isMobile ? "0 0.5rem" : 0,
+            }}
+          >
+            Market trends and listing insights for Columbia, MO using Zillow
+            data and listing-level metrics
+          </p>
+          <p
+            style={{
+              color: "rgba(255,255,255,0.85)",
+              margin: isMobile ? "0.3rem auto 0" : "1rem auto 0",
               fontSize: isMobile ? "1rem" : "1.2rem",
               lineHeight: isMobile ? 1.55 : 1.65,
               textAlign: "center",
@@ -445,8 +459,7 @@ function App() {
               padding: isMobile ? "0 0.5rem" : 0,
             }}
           >
-            Market trends and listing insights for Columbia, MO using public housing
-            data and listing-level metrics. -- Lihua He
+            Lihua He
           </p>
         </header>
        
