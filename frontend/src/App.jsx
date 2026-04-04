@@ -401,6 +401,7 @@ function App() {
         padding: isMobile ? "1rem" : "2rem",
         fontFamily: "Arial, sans-serif",
         color: "#1f2937",
+        overflowX: "hidden"
       }}
     >
 
@@ -598,6 +599,8 @@ function App() {
                 alignItems: "center",
                 flexWrap: "wrap",
                 gap: "0.75rem",
+                width:"100%",
+                minWidth:0
               }}
             >
               {/* legend */}
@@ -657,7 +660,7 @@ function App() {
           {loading ? (
             <p>Loading time series...</p>
           ) : (
-            <div style={{ width: "100%", marginTop: "1rem" }} className = "chart-card no-tap-highlight">
+            <div style={{ width: "100%", minWidth:0, marginTop: "1rem" }} className = "chart-card no-tap-highlight">
               <ResponsiveContainer width="100%" height={isMobile? 200 : 420}>
                 <LineChart data={timeseries}>
                   <defs>
@@ -751,6 +754,8 @@ function App() {
                 fontSize: isMobile ? "0.78rem" : "0.85rem",
                 color: "#6b7280",
                 marginBottom: "0.8rem",
+                width:"100%",
+                minWidth:0
               }}
             >
               <div
@@ -773,7 +778,7 @@ function App() {
             <span>Decresed Value</span>
           </div>
           </div>
-            <div className = "chart-card no-tap-highlight">
+            <div className = "chart-card no-tap-highlight" style={{ width: "100%", minWidth: 0 }}>
             <ResponsiveContainer width="100%" height={isMobile ? 280 : 320}>
               <BarChart data={annualChangeData}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -859,6 +864,7 @@ function App() {
               alignItems: "center",
               fontSize: isMobile ? "0.78rem" : "0.85rem",
               color: "#6b7280",
+             
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -922,7 +928,7 @@ function App() {
       </div>
        
       
-        <div className = "chart-card no-tap-highlight">
+        <div className = "chart-card no-tap-highlight" style={{ width: "100%", minWidth: 0 }}>
         <ResponsiveContainer width="100%" height={isMobile ? 300 : 360}>
           <ComposedChart data={filteredMarketData} barGap={8}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#e5e7eb" />

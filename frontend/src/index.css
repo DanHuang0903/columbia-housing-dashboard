@@ -160,3 +160,10 @@ code {
   outline: none;
   box-shadow: none;
 }
+html, body {
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
