@@ -1109,12 +1109,6 @@ function App() {
           </div>
 
           <div style={rowStyle}>
-            <Phone size={16} />
-            <a href="tel:5735294271" style={linkStyle}>
-              573.529.4271
-            </a>
-          </div>
-          <div style={rowStyle}>
             <Building2 size={16} />
             <span>Century 21 Community</span>
           </div>
