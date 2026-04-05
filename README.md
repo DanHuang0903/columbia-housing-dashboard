@@ -1,6 +1,7 @@
 # Columbia Housing Dashboard
 
 A full-stack project analyzing housing trends in Columbia, MO.
+Live Demo: https://columbia-housing.netlify.app
 
 ## Tech Stack
 - React (Vite)
