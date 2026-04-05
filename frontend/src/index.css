@@ -110,36 +110,10 @@ code {
   background: var(--code-bg);
 }
 
-.info-tooltip-wrapper:hover .info-tooltip-box {
-  opacity: 1 !important;
-  visibility: visible !important;
-  transform: translateY(-50%) translateX(4px) !important;
-}
 
-.info-tooltip-wrapper:hover .info-tooltip-box {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
-}
 
-.info-tooltip-wrapper.open .info-tooltip-box {
-  opacity: 1 !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-}
 
-@media (max-width: 767px) {
-  .info-tooltip-wrapper:hover .info-tooltip-box {
-    opacity: 0;
-    visibility: hidden;
-  }
 
-  .info-tooltip-wrapper.open .info-tooltip-box {
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: translateX(0) translateY(0) !important;
-  }
-}
 .no-tap-highlight {
   -webkit-tap-highlight-color: transparent;
 }

@@ -157,6 +157,8 @@ function App() {
 
     function InfoTooltip({ text, isMobile }) {
       const [open, setOpen] = useState(false);
+      const [hovered, setHovered] = useState(false);
+      const [placement, setPlacement] = useState("right");
       const wrapperRef = useRef(null);
     
       useEffect(() => {
@@ -175,20 +177,77 @@ function App() {
         };
       }, []);
     
+      useEffect(() => {
+        function updatePlacement() {
+          if (!wrapperRef.current) return;
+    
+          const rect = wrapperRef.current.getBoundingClientRect();
+          const tooltipWidth = isMobile ? 220 : 260;
+          const gap = 12;
+    
+          const spaceRight = window.innerWidth - rect.left;
+          const spaceLeft = rect.right;
+    
+          if (spaceRight < tooltipWidth + gap && spaceLeft >= tooltipWidth + gap) {
+            setPlacement("left");
+          } else {
+            setPlacement("right");
+          }
+        }
+    
+        updatePlacement();
+        window.addEventListener("resize", updatePlacement);
+        return () => window.removeEventListener("resize", updatePlacement);
+      }, [isMobile]);
+    
+      const visible = isMobile ? open : hovered;
+    
       function handleToggle() {
         if (isMobile) {
           setOpen((prev) => !prev);
         }
       }
     
+      const tooltipStyle = {
+        position: "absolute",
+        top: "calc(100% + 10px)",
+        width: isMobile ? "220px" : "260px",
+        maxWidth: "72vw",
+        background: "rgba(255,255,255,0.98)",
+        color: "#334155",
+        fontSize: "0.82rem",
+        lineHeight: 1.5,
+        padding: "0.85rem 0.95rem",
+        borderRadius: "14px",
+        border: "1px solid #e5e7eb",
+        boxShadow: "0 14px 36px rgba(15,23,42,0.12)",
+        opacity: visible ? 1 : 0,
+        visibility: visible ? "visible" : "hidden",
+        transition: "opacity 0.18s ease, visibility 0.18s ease",
+        zIndex: 999,
+        pointerEvents: visible ? "auto" : "none",
+        backdropFilter: "blur(10px)",
+      };
+    
+      if (placement === "left") {
+        tooltipStyle.right = "0";
+      } else {
+        tooltipStyle.left = "0";
+      }
+    
       return (
         <span
           ref={wrapperRef}
-          className={`info-tooltip-wrapper ${open ? "open" : ""}`}
           style={{
             position: "relative",
             display: "inline-flex",
             alignItems: "center",
+          }}
+          onMouseEnter={() => {
+            if (!isMobile) setHovered(true);
+          }}
+          onMouseLeave={() => {
+            if (!isMobile) setHovered(false);
           }}
         >
           <button
@@ -217,43 +276,18 @@ function App() {
             i
           </button>
     
-          <span
-            className="info-tooltip-box"
-            style={{
-              position: "absolute",
-              top: "calc(100% + 10px)",
-              left: isMobile ? "0" : "50%",
-              transform: isMobile ? "translateX(0)" : "translateX(-50%)",
-              width: isMobile ? "220px" : "260px",
-              maxWidth: "72vw",
-              background: "rgba(255,255,255,0.98)",
-              color: "#334155",
-              fontSize: "0.82rem",
-              lineHeight: 1.5,
-              padding: "0.85rem 0.95rem",
-              borderRadius: "14px",
-              border: "1px solid #e5e7eb",
-              boxShadow: "0 14px 36px rgba(15,23,42,0.12)",
-              opacity: 0,
-              visibility: "hidden",
-              transition: "all 0.18s ease",
-              zIndex: 30,
-              pointerEvents: "none",
-              backdropFilter: "blur(10px)",
-            }}
-          >
+          <span style={tooltipStyle}>
             <span
               style={{
                 position: "absolute",
                 top: "-6px",
-                left: isMobile ? "12px" : "50%",
-                transform: isMobile ? "none" : "translateX(-50%) rotate(45deg)",
                 width: "12px",
                 height: "12px",
                 background: "rgba(255,255,255,0.98)",
                 borderLeft: "1px solid #e5e7eb",
                 borderTop: "1px solid #e5e7eb",
-                rotate: isMobile ? "45deg" : undefined,
+                transform: "rotate(45deg)",
+                ...(placement === "left" ? { right: "10px" } : { left: "10px" }),
               }}
             />
             <span style={{ position: "relative", zIndex: 1 }}>{text}</span>
