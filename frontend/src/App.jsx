@@ -32,6 +32,9 @@ function App() {
   const hpiDescription = "HPI stands for House Price Index. It is an index-based measure of home price changes over time, provided here from FRED.";
 
   useEffect(() => {
+    document.title = "Columbia Housing Dashboard";
+  }, []);
+  useEffect(() => {
     fetchSummary();
   }, []);
 
