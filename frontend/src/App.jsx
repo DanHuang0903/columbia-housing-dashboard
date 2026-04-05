@@ -431,6 +431,14 @@ function App() {
     color: "#ffffff",
   };
 
+  const [activeIndex, setActiveIndex] = useState(0);
+
+    useEffect(() => {
+      if (timeseries.length > 0) {
+        setActiveIndex(timeseries.length - 1); 
+      }
+    }, [timeseries]);
+
   return (
     <div
       style={{
@@ -770,9 +778,10 @@ function App() {
                     width={isMobile ? 46 : 62}
                   />
                   <Tooltip
+                    defaultIndex={timeseries.length > 0 ? timeseries.length - 1 : undefined}
                     formatter={(value) => formatValue(value, metric)}
                     labelFormatter={(label) => `Date: ${formatDate(label)}`}
-                    content={<CustomTooltip metric={metric}/>}
+                    content={<CustomTooltip metric={metric} />}
                   />
                  
                   <Line
@@ -876,6 +885,7 @@ function App() {
                 />
                 <Tooltip
                   content={<BarTooltip/>}
+                  defaultIndex={annualChangeData.length > 0 ? annualChangeData.length - 1 : undefined}
                 />
                 <Bar dataKey="change" radius={[6, 6, 0, 0]}>
                   {annualChangeData.map((entry, index) => (
@@ -1034,7 +1044,10 @@ function App() {
               width={isMobile ? 40 : 52}
             />
 
-            <Tooltip content={<MarketTooltip />} />
+            <Tooltip 
+            content={<MarketTooltip />}
+            defaultIndex={filteredMarketData.length > 0 ? filteredMarketData.length - 1 : undefined}
+             />
 
             <Bar
               yAxisId="left"
