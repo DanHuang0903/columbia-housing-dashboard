@@ -1138,6 +1138,7 @@ function App() {
           marginTop: isMobile ? "2rem" : "3rem",
           marginLeft: isMobile ? "-1rem" : "-2rem",
           marginRight: isMobile ? "-1rem" : "-2rem",
+          marginBottom: isMobile ? "-1rem" : "-2rem",
           background: "linear-gradient(135deg, #B8B4A3, #7a746c)",
           padding: isMobile ? "2rem 1rem" : "2.5rem 2rem",
           color: "#f9fafb",
