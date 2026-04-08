@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Mail, Phone, MapPin,User,Building2 } from "lucide-react";
+import MyListingsSection from "./components/MyListingSection";
 import {
   LineChart,
   Line,
@@ -1136,6 +1137,8 @@ function App() {
             {error}
           </p>
         )}
+
+      <MyListingsSection />
       <footer
         style={{
           marginTop: isMobile ? "2rem" : "3rem",

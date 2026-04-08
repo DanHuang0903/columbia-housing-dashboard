@@ -141,3 +141,15 @@ html, body {
 * {
   box-sizing: border-box;
 }
+.my-listings-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .my-listings-layout {
+    grid-template-columns: minmax(0, 1fr) 360px;
+  }
+}
