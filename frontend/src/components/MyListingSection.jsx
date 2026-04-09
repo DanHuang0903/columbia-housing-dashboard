@@ -14,7 +14,7 @@ const GOOGLE_SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/12UIAyTGpmpSUIiknHputt-SX8hxHSfMZSVoc-X12-o8/export?format=csv&gid=0";
 
 const FILTER_OPTIONS = [
-  { label: "Type", value: "type" },
+  { label: "Property Type", value: "type" },
   { label: "Status", value: "status" },
   { label: "Listing Type", value: "listingType" },
   { label: "Elementary School", value: "elementarySchool" },
@@ -63,7 +63,7 @@ const SCHOOL_INFO = {
         rating: 5,
       },
       Gentry: {
-        name: "Ann Hawkins Gentry Middle School",
+        name: "Gentry Middle School",
         note:
           "Gentry Middle School serves a growing residential area and is commonly associated with newer developments.",
         rating: 7,
@@ -214,6 +214,17 @@ export default function MyListingsSection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeSlice, setActiveSlice] = useState(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const isMobile = windowWidth < 768;
+  const pieData = useMemo(() => {
+    return buildPieData(listings, selectedField);
+  }, [listings, selectedField]);
+
+  useEffect(() => {
+    if (isMobile && pieData.length > 0) {
+      setActiveSlice(pieData[pieData.length - 1]);
+    }
+  }, [isMobile, pieData]);
 
   useEffect(() => {
     async function fetchSheetData() {
@@ -244,8 +255,7 @@ export default function MyListingsSection() {
 
     fetchSheetData();
   }, []);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const isMobile = windowWidth < 768;
+  
 
   useEffect(() => {
     function handleResize() {
@@ -255,9 +265,7 @@ export default function MyListingsSection() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  const pieData = useMemo(() => {
-    return buildPieData(listings, selectedField);
-  }, [listings, selectedField]);
+ 
 
   const summary = useMemo(() => {
     const forSaleCount = listings.filter(
@@ -307,6 +315,28 @@ export default function MyListingsSection() {
       return fullName
         .replace(" High School", "")
         .replace(" School", "");
+    }
+  
+    return fullName;
+  }
+
+  function getShortDisplayName(selectedField, shortName) {
+    const fullName = getDisplayName(selectedField, shortName);
+  
+    if (selectedField === "elementarySchool") {
+      if (fullName === "Mary Paxton Keeley Elementary") return "MPK";
+      if (fullName === "Beulah Ralph Elementary") return "Beulah Ralph";
+      if (fullName === "Rock Bridge Elementary") return "Rock Bridge";
+      if (fullName === "Mill Creek Elementary") return "Mill Creek";
+      return fullName.replace(" Elementary", "");
+    }
+  
+    if (selectedField === "middleSchool") {
+      return fullName.replace(" Middle School", "");
+    }
+  
+    if (selectedField === "highSchool") {
+      return fullName.replace(" High School", "");
     }
   
     return fullName;
@@ -584,7 +614,60 @@ export default function MyListingsSection() {
                 cx={isMobile ? "55%" : "45%"}
                 cy="50%"
                 outerRadius={isMobile ? 110 : 125}
-                label={isMobile ? "" : ({ cx, cy, midAngle, outerRadius, name }) => {
+                labelLine={isMobile ? false : true}
+               
+                label={isMobile ? 
+                    (props) => {
+                        const { cx, cy, midAngle, innerRadius = 0, outerRadius, name, percent } = props;
+                        const RADIAN = Math.PI / 180;
+                      
+                        if (isMobile) {
+                          const radius = innerRadius + (outerRadius - innerRadius) * 0.68;
+                          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                      
+                          const shortLabel = getShortDisplayName(selectedField, name);
+                      
+                          // 太小的扇区不显示，避免挤在一起
+                          if (percent < 0.08) return null;
+                      
+                          return (
+                            <text
+                              x={x}
+                              y={y}
+                              fill="#fff"
+                              textAnchor="middle"
+                              dominantBaseline="central"
+                              style={{
+                                fontSize: "11px",
+                                fontWeight: 600,
+                                pointerEvents: "none",
+                              }}
+                            >
+                              {shortLabel}
+                            </text>
+                          );
+                        }
+                      
+                        const radius = outerRadius + 28;
+                        const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                        const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                        const textAnchor = x > cx ? "start" : "end";
+                      
+                        return (
+                          <text
+                            x={x}
+                            y={y}
+                            fill="#64748b"
+                            textAnchor={textAnchor}
+                            dominantBaseline="central"
+                            style={{ fontSize: "13px", fontWeight: 500 }}
+                          >
+                            {getShortDisplayName(selectedField, name)}
+                          </text>
+                        );
+                      }
+                    : ({ cx, cy, midAngle, outerRadius, name }) => {
                     const RADIAN = Math.PI / 180;
                     const radius = outerRadius + 25;
                     const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -625,12 +708,71 @@ export default function MyListingsSection() {
                   />
                 ))}
               </Pie>
-              <Tooltip content={<CustomTooltip/>}/>
+              {!isMobile && <Tooltip content={<CustomTooltip />} />}
+             
               
             </PieChart>
+            {isMobile && activeSlice && (
+                <div
+                    style={{
+                    marginTop: "0.8rem",
+                    background: "#ffffff",
+                    border: "1px solid #eef2f7",
+                    borderRadius: "14px",
+                    padding: "10px 12px",
+                    boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
+                    }}
+                >
+                    <div
+                    style={{
+                        fontSize: "0.9rem",
+                        fontWeight: 600,
+                        color: "#475569",
+                        marginBottom: "4px",
+                    }}
+                    >
+                    {getDisplayName(selectedField, activeSlice.name)}
+                    </div>
+
+                    {SCHOOL_INFO[selectedField]?.[activeSlice.name]?.rating && (
+                    <div
+                        style={{
+                        fontSize: "0.78rem",
+                        color: "#64748b",
+                        marginBottom: "2px",
+                        }}
+                    >
+                        Rating: {SCHOOL_INFO[selectedField][activeSlice.name].rating}/10
+                    </div>
+                    )}
+
+                    <div
+                    style={{
+                        fontSize: "0.8rem",
+                        color: "#334155",
+                    }}
+                    >
+                    {activeSlice.value} listing(s)
+                    </div>
+
+                    {SCHOOL_INFO[selectedField]?.[activeSlice.name]?.note && activeSlice.name !== "Other" && (
+                    <div
+                        style={{
+                        fontSize: "0.75rem",
+                        color: "#94a3b8",
+                        marginTop: "4px",
+                        lineHeight: 1.3,
+                        }}
+                    >
+                        {SCHOOL_INFO[selectedField][activeSlice.name].note}
+                    </div>
+                    )}
+                </div>
+                )}
         </div>
           <div
             style={{
+              display: isMobile? "none" : "block",
               background: "#ffffff",
               padding: isMobile ? "1rem" : "1.1rem",
               borderRadius: "18px",
