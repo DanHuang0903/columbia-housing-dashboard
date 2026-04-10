@@ -480,7 +480,7 @@ export default function MyListingsSection() {
         >
             <div style={summaryCardStyle}>
             <p style={{ margin: 0, color: "#9ca3af", fontSize: "0.75rem", fontWeight: 600 }}>
-                My Listings 
+                My Listings For Sale
             </p>
             <h3 style={{ margin: "0.35rem 0 0", fontSize: isMobile ? "1rem" : "1.2rem", color: "#111827" }}>
                 {summary.forSaleCount}
@@ -490,7 +490,7 @@ export default function MyListingsSection() {
 
             <div style={summaryCardStyle}>
             <p style={{ margin: 0, color: "#9ca3af", fontSize: "0.75rem", fontWeight: 600 }}>
-                For Lease
+                My Listing For Lease
             </p>
             <h3 style={{ margin: "0.35rem 0 0", fontSize: isMobile ? "1rem" : "1.2rem", color: "#111827" }}>
                 {summary.forLeaseCount}
@@ -500,7 +500,7 @@ export default function MyListingsSection() {
 
             <div style={summaryCardStyle}>
             <p style={{ margin: 0, color: "#9ca3af", fontSize: "0.75rem", fontWeight: 600 }}>
-                Active
+                Active Listings
             </p>
             <h3 style={{ margin: "0.35rem 0 0", fontSize: isMobile ? "1rem" : "1.2rem", color: "#111827" }}>
                 {summary.activeCount}
@@ -672,20 +672,6 @@ export default function MyListingsSection() {
                 cy="50%"
                 outerRadius={isMobile ? 110 : 125}
                 labelLine={isMobile ? false : true}
-                // onMouseEnter={(_, index) => {
-                //     if (!isMobile) {
-                //       const next = pieData[index];
-                //       if (hoverSliceRef.current !== next?.name) {
-                //         hoverSliceRef.current = next?.name;
-                //         setActiveSlice(next);
-                //       }
-                //     }
-                //   }}
-                //   onClick={(_, index) => {
-                //     if (isMobile) {
-                //       setActiveSlice(pieData[index]);
-                //     }
-                //   }}
                 label={isMobile ? 
                     (props) => {
                         const { cx, cy, midAngle, innerRadius = 0, outerRadius, name, percent } = props;
