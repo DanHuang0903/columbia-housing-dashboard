@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Papa from "papaparse";
 import {
   PieChart,
@@ -216,15 +216,61 @@ export default function MyListingsSection() {
   const [activeSlice, setActiveSlice] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const isMobile = windowWidth < 768;
+  const hoverSliceRef = useRef(null);
+  const summaryCardStyle = {
+    background: "#ffffff",
+    padding: isMobile ? "0.9rem" : "1rem",
+    borderRadius: "18px",
+    border: "1px solid #eef2f7",
+    boxShadow: "0 6px 18px rgba(15,23,42,0.05)",
+  };
   const pieData = useMemo(() => {
     return buildPieData(listings, selectedField);
   }, [listings, selectedField]);
 
-  useEffect(() => {
-    if (isMobile && pieData.length > 0) {
-      setActiveSlice(pieData[pieData.length - 1]);
-    }
-  }, [isMobile, pieData]);
+  const summary = useMemo(() => {
+    const forSaleCount = listings.filter(
+      (item) => item.listingType.toLowerCase() === "for sale"
+    ).length;
+
+    const forLeaseCount = listings.filter(
+      (item) => item.listingType.toLowerCase() === "for lease"
+    ).length;
+
+    const activeCount = listings.filter(
+        (item) => item.status.toLowerCase() === "active"
+      ).length;
+
+    const pendingCount = listings.filter(
+      (item) => item.status.toLowerCase() === "pending"
+    ).length;
+
+    return {
+      forSaleCount,
+      forLeaseCount,
+      pendingCount,
+      activeCount
+    };
+  }, [listings]);
+
+  const today = new Date();
+
+  const formattedDate = today.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const dateStyle = {
+    margin: "0.25rem 0 0",
+    fontSize: "0.7rem",
+    color: "#94a3b8",
+  };
+
+//   useEffect(() => {
+//     if (pieData.length > 0) {
+//       setActiveSlice(pieData[0]);
+//     }
+//   }, [pieData, selectedField]);
 
   useEffect(() => {
     async function fetchSheetData() {
@@ -267,25 +313,7 @@ export default function MyListingsSection() {
   }, []);
  
 
-  const summary = useMemo(() => {
-    const forSaleCount = listings.filter(
-      (item) => item.listingType.toLowerCase() === "for sale"
-    ).length;
 
-    const forLeaseCount = listings.filter(
-      (item) => item.listingType.toLowerCase() === "for lease"
-    ).length;
-
-    const pendingCount = listings.filter(
-      (item) => item.status.toLowerCase() === "pending"
-    ).length;
-
-    return {
-      forSaleCount,
-      forLeaseCount,
-      pendingCount,
-    };
-  }, [listings]);
 
   function getDisplayName(selectedField, shortName) {
     if (!shortName) return shortName;
@@ -296,29 +324,7 @@ export default function MyListingsSection() {
     return shortName;
   }
 
-  function getShortDisplayName(selectedField, shortName) {
-    const fullName = getDisplayName(selectedField, shortName);
   
-    if (selectedField === "elementarySchool") {
-      return fullName
-        .replace(" Elementary", "")
-        .replace(" School", "");
-    }
-  
-    if (selectedField === "middleSchool") {
-      return fullName
-        .replace(" Middle School", "")
-        .replace(" School", "");
-    }
-  
-    if (selectedField === "highSchool") {
-      return fullName
-        .replace(" High School", "")
-        .replace(" School", "");
-    }
-  
-    return fullName;
-  }
 
   function getShortDisplayName(selectedField, shortName) {
     const fullName = getDisplayName(selectedField, shortName);
@@ -462,7 +468,57 @@ export default function MyListingsSection() {
           Active listings and school-area distribution for Lihua He
         </p>
       </div>
-  
+      <section style={{ marginBottom: "1.25rem" }}>
+        <div
+            style={{
+            display: "grid",
+            gridTemplateColumns: isMobile
+                ? "repeat(2, 1fr)"
+                : "repeat(4, minmax(0, 1fr))",
+            gap: "1rem",
+            }}
+        >
+            <div style={summaryCardStyle}>
+            <p style={{ margin: 0, color: "#9ca3af", fontSize: "0.75rem", fontWeight: 600 }}>
+                My Listings 
+            </p>
+            <h3 style={{ margin: "0.35rem 0 0", fontSize: isMobile ? "1rem" : "1.2rem", color: "#111827" }}>
+                {summary.forSaleCount}
+            </h3>
+            <p style={dateStyle}>Updated {formattedDate}</p>
+            </div>
+
+            <div style={summaryCardStyle}>
+            <p style={{ margin: 0, color: "#9ca3af", fontSize: "0.75rem", fontWeight: 600 }}>
+                For Lease
+            </p>
+            <h3 style={{ margin: "0.35rem 0 0", fontSize: isMobile ? "1rem" : "1.2rem", color: "#111827" }}>
+                {summary.forLeaseCount}
+            </h3>
+            <p style={dateStyle}>Updated {formattedDate}</p>
+            </div>
+
+            <div style={summaryCardStyle}>
+            <p style={{ margin: 0, color: "#9ca3af", fontSize: "0.75rem", fontWeight: 600 }}>
+                Active
+            </p>
+            <h3 style={{ margin: "0.35rem 0 0", fontSize: isMobile ? "1rem" : "1.2rem", color: "#111827" }}>
+                {summary.activeCount}
+            </h3>
+            <p style={dateStyle}>Updated {formattedDate}</p>
+            </div>
+
+            <div style={summaryCardStyle}>
+            <p style={{ margin: 0, color: "#9ca3af", fontSize: "0.75rem", fontWeight: 600 }}>
+                Pending
+            </p>
+            <h3 style={{ margin: "0.35rem 0 0", fontSize: isMobile ? "1rem" : "1.2rem", color: "#111827" }}>
+                {summary.pendingCount}
+            </h3>
+            <p style={dateStyle}>Updated {formattedDate}</p>
+            </div>
+        </div>
+        </section>
       <section
         style={{
           background: "#ffffff",
@@ -496,7 +552,7 @@ export default function MyListingsSection() {
             Explore Lihua He&apos;s listings by property type, status, listing type,
             and school area
           </p>
-  
+     
           <div
             style={{
                 marginTop: "1rem",
@@ -608,6 +664,7 @@ export default function MyListingsSection() {
         <div className = "chart-card no-tap-highlight" >
             <PieChart width={isMobile ? 320 : 480} height={isMobile ? 300 : 320}>
               <Pie
+                
                 data={pieData}
                 dataKey="value"
                 nameKey="name"
@@ -615,7 +672,20 @@ export default function MyListingsSection() {
                 cy="50%"
                 outerRadius={isMobile ? 110 : 125}
                 labelLine={isMobile ? false : true}
-               
+                // onMouseEnter={(_, index) => {
+                //     if (!isMobile) {
+                //       const next = pieData[index];
+                //       if (hoverSliceRef.current !== next?.name) {
+                //         hoverSliceRef.current = next?.name;
+                //         setActiveSlice(next);
+                //       }
+                //     }
+                //   }}
+                //   onClick={(_, index) => {
+                //     if (isMobile) {
+                //       setActiveSlice(pieData[index]);
+                //     }
+                //   }}
                 label={isMobile ? 
                     (props) => {
                         const { cx, cy, midAngle, innerRadius = 0, outerRadius, name, percent } = props;
@@ -687,11 +757,7 @@ export default function MyListingsSection() {
                       </text>
                     );
                   }}
-                  onClick={(data) => {
-                    if (isMobile) {
-                      setActiveSlice(data);
-                    }
-                  }}
+                  
               >
                 {pieData.map((entry, index) => (
                   <Cell
@@ -708,71 +774,16 @@ export default function MyListingsSection() {
                   />
                 ))}
               </Pie>
-              {!isMobile && <Tooltip content={<CustomTooltip />} />}
+              <Tooltip content={<CustomTooltip />} />
+              {/* {!isMobile && <Tooltip content={<CustomTooltip />} />} */}
              
               
             </PieChart>
-            {isMobile && activeSlice && (
-                <div
-                    style={{
-                    marginTop: "0.8rem",
-                    background: "#ffffff",
-                    border: "1px solid #eef2f7",
-                    borderRadius: "14px",
-                    padding: "10px 12px",
-                    boxShadow: "0 6px 18px rgba(15,23,42,0.08)",
-                    }}
-                >
-                    <div
-                    style={{
-                        fontSize: "0.9rem",
-                        fontWeight: 600,
-                        color: "#475569",
-                        marginBottom: "4px",
-                    }}
-                    >
-                    {getDisplayName(selectedField, activeSlice.name)}
-                    </div>
-
-                    {SCHOOL_INFO[selectedField]?.[activeSlice.name]?.rating && (
-                    <div
-                        style={{
-                        fontSize: "0.78rem",
-                        color: "#64748b",
-                        marginBottom: "2px",
-                        }}
-                    >
-                        Rating: {SCHOOL_INFO[selectedField][activeSlice.name].rating}/10
-                    </div>
-                    )}
-
-                    <div
-                    style={{
-                        fontSize: "0.8rem",
-                        color: "#334155",
-                    }}
-                    >
-                    {activeSlice.value} listing(s)
-                    </div>
-
-                    {SCHOOL_INFO[selectedField]?.[activeSlice.name]?.note && activeSlice.name !== "Other" && (
-                    <div
-                        style={{
-                        fontSize: "0.75rem",
-                        color: "#94a3b8",
-                        marginTop: "4px",
-                        lineHeight: 1.3,
-                        }}
-                    >
-                        {SCHOOL_INFO[selectedField][activeSlice.name].note}
-                    </div>
-                    )}
-                </div>
-                )}
+           
         </div>
           <div
             style={{
-              display: isMobile? "none" : "block",
+              
               background: "#ffffff",
               padding: isMobile ? "1rem" : "1.1rem",
               borderRadius: "18px",
@@ -807,7 +818,7 @@ export default function MyListingsSection() {
                 gap: "0.6rem",
               }}
             >
-              {description.bullets.map((bullet, index) => (
+              {isMobile? null: description.bullets.map((bullet, index) => (
                 
                 <div
                   key={index}
