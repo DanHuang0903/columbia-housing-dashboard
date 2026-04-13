@@ -559,7 +559,7 @@ function App() {
                 fontWeight: 600,
               }}
             >
-              Summary
+              Columbia Housing Summary
             </h2>
 
             <p
