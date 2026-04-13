@@ -1,14 +1,8 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import Papa from "papaparse";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import { Home, KeyRound, Clock3 } from "lucide-react";
+
+import { ExternalLink } from "lucide-react";
+import ListingsPieChart from "./ListingsPieChart";
 
 const GOOGLE_SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/12UIAyTGpmpSUIiknHputt-SX8hxHSfMZSVoc-X12-o8/export?format=csv&gid=0";
@@ -21,6 +15,8 @@ const FILTER_OPTIONS = [
   { label: "Middle School", value: "middleSchool" },
   { label: "High School", value: "highSchool" },
 ];
+
+
 
 const SCHOOL_INFO = {
     elementarySchool: {
@@ -121,6 +117,7 @@ function normalizeRow(row) {
       bathrooms: row["Bathrooms"]?.trim() || "",
       builtYear: row["Built year"]?.trim() || "",
       daysOnMarket: row["Days on market"]?.trim() || "",
+      link: row["link"]?.trim() || "",
       elementarySchool:
         row["Elementary school"]?.trim() ||
         row["Elementary School"]?.trim() ||
@@ -208,12 +205,45 @@ function getDescription(selectedField, pieData) {
   };
 }
 
+function getDisplayName(selectedField, shortName) {
+  if (!shortName) return shortName;
+
+  const info = SCHOOL_INFO[selectedField]?.[shortName];
+  if (info?.name) return info.name;
+
+  return shortName;
+}
+
+
+
+function getShortDisplayName(selectedField, shortName) {
+  const fullName = getDisplayName(selectedField, shortName);
+
+  if (selectedField === "elementarySchool") {
+    if (fullName === "Mary Paxton Keeley Elementary") return "MPK";
+    if (fullName === "Beulah Ralph Elementary") return "Beulah Ralph";
+    if (fullName === "Rock Bridge Elementary") return "Rock Bridge";
+    if (fullName === "Mill Creek Elementary") return "Mill Creek";
+    return fullName.replace(" Elementary", "");
+  }
+
+  if (selectedField === "middleSchool") {
+    return fullName.replace(" Middle School", "");
+  }
+
+  if (selectedField === "highSchool") {
+    return fullName.replace(" High School", "");
+  }
+
+  return fullName;
+}
+
 export default function MyListingsSection() {
   const [listings, setListings] = useState([]);
   const [selectedField, setSelectedField] = useState("type");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [activeSlice, setActiveSlice] = useState(null);
+  //const [activeSlice, setActiveSlice] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const isMobile = windowWidth < 768;
   const hoverSliceRef = useRef(null);
@@ -224,6 +254,7 @@ export default function MyListingsSection() {
     border: "1px solid #eef2f7",
     boxShadow: "0 6px 18px rgba(15,23,42,0.05)",
   };
+
   const pieData = useMemo(() => {
     return buildPieData(listings, selectedField);
   }, [listings, selectedField]);
@@ -260,17 +291,39 @@ export default function MyListingsSection() {
     day: "numeric",
     year: "numeric",
   });
+
   const dateStyle = {
     margin: "0.25rem 0 0",
     fontSize: "0.7rem",
     color: "#94a3b8",
   };
 
-//   useEffect(() => {
-//     if (pieData.length > 0) {
-//       setActiveSlice(pieData[0]);
-//     }
-//   }, [pieData, selectedField]);
+
+
+  const [listingSlice, setListingSlice] = useState(null);
+
+
+
+  //切换group时候清空div
+  useEffect(() => {
+    setListingSlice(null);
+  }, [selectedField]);
+
+  //过滤listings
+  const filteredListings = useMemo(() => {
+    if (!listingSlice) return [];
+  
+    return listings.filter(
+      (item) => item[selectedField] === listingSlice.name
+    );
+  }, [listings, selectedField, listingSlice]);
+
+
+  const handleSliceHoverOrClick = useCallback((slice) => {
+    setListingSlice(slice);
+  }, []);
+
+
 
   useEffect(() => {
     async function fetchSheetData() {
@@ -314,39 +367,6 @@ export default function MyListingsSection() {
  
 
 
-
-  function getDisplayName(selectedField, shortName) {
-    if (!shortName) return shortName;
-  
-    const info = SCHOOL_INFO[selectedField]?.[shortName];
-    if (info?.name) return info.name;
-  
-    return shortName;
-  }
-
-  
-
-  function getShortDisplayName(selectedField, shortName) {
-    const fullName = getDisplayName(selectedField, shortName);
-  
-    if (selectedField === "elementarySchool") {
-      if (fullName === "Mary Paxton Keeley Elementary") return "MPK";
-      if (fullName === "Beulah Ralph Elementary") return "Beulah Ralph";
-      if (fullName === "Rock Bridge Elementary") return "Rock Bridge";
-      if (fullName === "Mill Creek Elementary") return "Mill Creek";
-      return fullName.replace(" Elementary", "");
-    }
-  
-    if (selectedField === "middleSchool") {
-      return fullName.replace(" Middle School", "");
-    }
-  
-    if (selectedField === "highSchool") {
-      return fullName.replace(" High School", "");
-    }
-  
-    return fullName;
-  }
 
   function CustomTooltip({ active, payload, label }) {
     if (!active || !payload || !payload.length) return null;
@@ -662,109 +682,16 @@ export default function MyListingsSection() {
           }}
         >
         <div className = "chart-card no-tap-highlight" >
-            <PieChart width={isMobile ? 320 : 480} height={isMobile ? 300 : 320}>
-              <Pie
-                
-                data={pieData}
-                dataKey="value"
-                nameKey="name"
-                cx={isMobile ? "55%" : "45%"}
-                cy="50%"
-                outerRadius={isMobile ? 110 : 125}
-                labelLine={isMobile ? false : true}
-                label={isMobile ? 
-                    (props) => {
-                        const { cx, cy, midAngle, innerRadius = 0, outerRadius, name, percent } = props;
-                        const RADIAN = Math.PI / 180;
-                      
-                        if (isMobile) {
-                          const radius = innerRadius + (outerRadius - innerRadius) * 0.68;
-                          const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                          const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                      
-                          const shortLabel = getShortDisplayName(selectedField, name);
-                      
-                          // 太小的扇区不显示，避免挤在一起
-                          if (percent < 0.08) return null;
-                      
-                          return (
-                            <text
-                              x={x}
-                              y={y}
-                              fill="#fff"
-                              textAnchor="middle"
-                              dominantBaseline="central"
-                              style={{
-                                fontSize: "11px",
-                                fontWeight: 600,
-                                pointerEvents: "none",
-                              }}
-                            >
-                              {shortLabel}
-                            </text>
-                          );
-                        }
-                      
-                        const radius = outerRadius + 28;
-                        const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                        const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                        const textAnchor = x > cx ? "start" : "end";
-                      
-                        return (
-                          <text
-                            x={x}
-                            y={y}
-                            fill="#64748b"
-                            textAnchor={textAnchor}
-                            dominantBaseline="central"
-                            style={{ fontSize: "13px", fontWeight: 500 }}
-                          >
-                            {getShortDisplayName(selectedField, name)}
-                          </text>
-                        );
-                      }
-                    : ({ cx, cy, midAngle, outerRadius, name }) => {
-                    const RADIAN = Math.PI / 180;
-                    const radius = outerRadius + 25;
-                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                    const textAnchor = x > cx ? "start" : "end";
-                  
-                    return (
-                      <text
-                        x={x}
-                        y={y}
-                        fill="#64748b"
-                        textAnchor={textAnchor}
-                        dominantBaseline="central"
-                        style={{ fontSize: isMobile ? "12px" : "13px", fontWeight: 500 }}
-                      >
-                        {getShortDisplayName(selectedField, name)}
-                      </text>
-                    );
-                  }}
-                  
-              >
-                {pieData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={[
-                      "#fec2e4",
-                      "#2a9c9d",
-                      "#c09bbc",
-                      "#96af6f",
-                      "#769bbd",
-                      "#f4e0e1",
-                      "#b8dea4",
-                    ][index % 7]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip content={<CustomTooltip />} />
-              {/* {!isMobile && <Tooltip content={<CustomTooltip />} />} */}
-             
-              
-            </PieChart>
+        <ListingsPieChart
+          pieData={pieData}
+          selectedField={selectedField}
+          isMobile={isMobile}
+          onSliceHoverOrClick={handleSliceHoverOrClick}
+          // getDisplayName={getDisplayName}
+          // getShortDisplayName={getShortDisplayName}
+          // CustomTooltip={CustomTooltip}
+          schoolInfo = {SCHOOL_INFO}
+        />
            
         </div>
           <div
@@ -824,6 +751,114 @@ export default function MyListingsSection() {
             </div>
           </div>
         </div>
+        {listingSlice && filteredListings.length > 0 && (
+          <div
+            style={{
+              marginTop: "1.25rem",
+              background: "#ffffff",
+              border: "1px solid #eef2f7",
+              borderRadius: "18px",
+              padding: "1rem",
+            }}
+          >
+            <h3
+              style={{
+                margin: 0,
+                fontSize: "1rem",
+                color: "#6b7280",
+                marginBottom: "0.75rem",
+                textAlign: "left",
+              }}
+            >
+              Listings — {getDisplayName(selectedField, listingSlice.name)}
+            </h3>
+
+            <div style={{ display: "grid", gap: "0.75rem" }}>
+            {filteredListings.map((item, i) => {
+              const card = (
+                <div
+                  style={{
+                    background: "#f8fafc",
+                    border: "1px solid #eef2f7",
+                    borderRadius: "12px",
+                    padding: "0.9rem 1rem",
+                    textAlign: "left",
+                    cursor: item.link ? "pointer" : "default",
+                    transition: "all 0.18s ease",
+                    boxShadow: "0 0 0 rgba(0,0,0,0)",
+                    position: "relative",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow =
+                      "0 8px 18px rgba(15,23,42,0.08)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow =
+                      "0 0 0 rgba(0,0,0,0)";
+                  }}
+                >
+                  {item.link && (
+                    <ExternalLink
+                      size={14}
+                      strokeWidth={2}
+                      style={{
+                        position: "absolute",
+                        top: "8px",
+                        right: "8px",
+                        color: "#94a3b8",
+                        pointerEvents: "none",
+                      }}
+                    />
+                  )}
+                  <div
+                    style={{
+                      fontWeight: 600,
+                      color: "#475569",
+                      fontSize: "0.95rem",
+                      textAlign: "left",
+                    }}
+                  >
+                    {item.address}
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: "0.8rem",
+                      color: "#94a3b8",
+                      marginTop: "4px",
+                      textAlign: "left",
+                    }}
+                  >
+                    {item.price}
+                    {item.bedrooms ? ` · ${item.bedrooms} bd` : ""}
+                    {item.bathrooms ? ` · ${item.bathrooms} ba` : ""}
+                  </div>
+                </div>
+              );
+
+              return item.link ? (
+                <a
+                  key={i}
+                  href={item.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: "block",
+                    textDecoration: "none",
+                  }}
+                >
+                  {card}
+                </a>
+              ) : (
+                <div key={i}>{card}</div>
+              );
+            })}
+            </div>
+          </div>
+        )}
+        
       </section>
     </>
   );
