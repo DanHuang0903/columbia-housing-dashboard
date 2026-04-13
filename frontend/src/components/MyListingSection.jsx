@@ -733,9 +733,8 @@ export default function MyListingsSection() {
                 <div
                   style={{
                     background: "#f8fafc",
-                    border: "1px solid #eef2f7",
                     borderRadius: "12px",
-                    padding: "0.9rem 1rem",
+                    padding: "0.5rem 0.8rem",
                     textAlign: "left",
                     cursor: item.link ? "pointer" : "default",
                     transition: "all 0.18s ease",
@@ -770,7 +769,7 @@ export default function MyListingsSection() {
                     style={{
                       fontWeight: 600,
                       color: "#475569",
-                      fontSize: "0.95rem",
+                      fontSize: "0.8rem",
                       textAlign: "left",
                     }}
                   >
@@ -779,9 +778,8 @@ export default function MyListingsSection() {
 
                   <div
                     style={{
-                      fontSize: "0.8rem",
+                      fontSize: "0.7rem",
                       color: "#94a3b8",
-                      marginTop: "4px",
                       textAlign: "left",
                     }}
                   >
@@ -908,9 +906,8 @@ export default function MyListingsSection() {
                 <div
                   style={{
                     background: "#f8fafc",
-                    border: "1px solid #eef2f7",
                     borderRadius: "12px",
-                    padding: "0.9rem 1rem",
+                    padding: "0.5rem 0.8rem",
                     textAlign: "left",
                     cursor: item.link ? "pointer" : "default",
                     transition: "all 0.18s ease",
@@ -945,7 +942,7 @@ export default function MyListingsSection() {
                     style={{
                       fontWeight: 600,
                       color: "#475569",
-                      fontSize: "0.95rem",
+                      fontSize: "0.8rem",
                       textAlign: "left",
                     }}
                   >
@@ -954,9 +951,8 @@ export default function MyListingsSection() {
 
                   <div
                     style={{
-                      fontSize: "0.8rem",
+                      fontSize: "0.7rem",
                       color: "#94a3b8",
-                      marginTop: "4px",
                       textAlign: "left",
                     }}
                   >
