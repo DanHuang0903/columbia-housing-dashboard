@@ -713,7 +713,18 @@ export default function MyListingsSection() {
                 textAlign: "left",
               }}
             >
-              Listings — {getDisplayName(selectedField, listingSlice.name)}
+              Listings by {FILTER_OPTIONS.find(option => option.value === selectedField)?.label} 
+              <p
+              style={{
+              fontSize: "0.8rem",
+              color: "#94a3b8",
+              marginTop: "4px",
+              textAlign: "left",
+              }}
+              >
+              {getDisplayName(selectedField, listingSlice.name)}
+              </p>
+              
             </h3>
 
             <div style={{ display: "grid", gap: "0.75rem" }}>
@@ -878,7 +889,17 @@ export default function MyListingsSection() {
                 textAlign: "left",
               }}
             >
-              Listings — {getDisplayName(selectedField, listingSlice.name)}
+              Listings by {FILTER_OPTIONS.find(option => option.value === selectedField)?.label} 
+              <p
+              style={{
+              fontSize: "0.8rem",
+              color: "#94a3b8",
+              marginTop: "4px",
+              textAlign: "left",
+              }}
+              >
+              {getDisplayName(selectedField, listingSlice.name)}
+              </p>
             </h3>
 
             <div style={{ display: "grid", gap: "0.75rem" }}>
