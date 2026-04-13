@@ -694,6 +694,114 @@ export default function MyListingsSection() {
         />
            
         </div>
+        {isMobile && listingSlice && filteredListings.length > 0 && (
+          <div
+            style={{
+              marginTop: "1.25rem",
+              background: "#ffffff",
+              border: "1px solid #eef2f7",
+              borderRadius: "18px",
+              padding: "1rem",
+            }}
+          >
+            <h3
+              style={{
+                margin: 0,
+                fontSize: "1rem",
+                color: "#6b7280",
+                marginBottom: "0.75rem",
+                textAlign: "left",
+              }}
+            >
+              Listings — {getDisplayName(selectedField, listingSlice.name)}
+            </h3>
+
+            <div style={{ display: "grid", gap: "0.75rem" }}>
+            {filteredListings.map((item, i) => {
+              const card = (
+                <div
+                  style={{
+                    background: "#f8fafc",
+                    border: "1px solid #eef2f7",
+                    borderRadius: "12px",
+                    padding: "0.9rem 1rem",
+                    textAlign: "left",
+                    cursor: item.link ? "pointer" : "default",
+                    transition: "all 0.18s ease",
+                    boxShadow: "0 0 0 rgba(0,0,0,0)",
+                    position: "relative",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow =
+                      "0 8px 18px rgba(15,23,42,0.08)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow =
+                      "0 0 0 rgba(0,0,0,0)";
+                  }}
+                >
+                  {item.link && (
+                    <ExternalLink
+                      size={14}
+                      strokeWidth={2}
+                      style={{
+                        position: "absolute",
+                        top: "8px",
+                        right: "8px",
+                        color: "#94a3b8",
+                        pointerEvents: "none",
+                      }}
+                    />
+                  )}
+                  <div
+                    style={{
+                      fontWeight: 600,
+                      color: "#475569",
+                      fontSize: "0.95rem",
+                      textAlign: "left",
+                    }}
+                  >
+                    {item.address}
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: "0.8rem",
+                      color: "#94a3b8",
+                      marginTop: "4px",
+                      textAlign: "left",
+                    }}
+                  >
+                    {item.price}
+                    {item.bedrooms ? ` · ${item.bedrooms} bd` : ""}
+                    {item.bathrooms ? ` · ${item.bathrooms} ba` : ""}
+                  </div>
+                </div>
+              );
+
+              return item.link ? (
+                <a
+                  key={i}
+                  href={item.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: "block",
+                    textDecoration: "none",
+                  }}
+                >
+                  {card}
+                </a>
+              ) : (
+                <div key={i}>{card}</div>
+              );
+            })}
+            </div>
+          </div>
+        )}
+        
           <div
             style={{
               
@@ -751,7 +859,7 @@ export default function MyListingsSection() {
             </div>
           </div>
         </div>
-        {listingSlice && filteredListings.length > 0 && (
+        {!isMobile && listingSlice && filteredListings.length > 0 && (
           <div
             style={{
               marginTop: "1.25rem",
