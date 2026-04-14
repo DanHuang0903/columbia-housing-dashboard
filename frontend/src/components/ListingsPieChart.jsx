@@ -217,8 +217,9 @@ const ListingsPieChart = memo(function ListingsPieChart({
       </Pie>
 
       <Tooltip
-  content={<PieCustomTooltip selectedField={selectedField} schoolInfo={schoolInfo} />}
-/>
+        content={<PieCustomTooltip selectedField={selectedField} schoolInfo={schoolInfo} />}
+        defaultIndex={0}
+        />
     </PieChart>
   );
 });

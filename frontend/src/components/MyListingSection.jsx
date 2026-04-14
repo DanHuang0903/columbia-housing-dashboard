@@ -303,10 +303,20 @@ export default function MyListingsSection() {
   const [listingSlice, setListingSlice] = useState(null);
 
 
+  const hasInitializedDefaultSlice = useRef(false);
 
+
+  useEffect(() => {
+    if (pieData.length > 0 && !hasInitializedDefaultSlice.current) {
+      setListingSlice(pieData[0]);
+      hasInitializedDefaultSlice.current = true;
+    }
+  }, [selectedField, pieData]);
   //切换group时候清空div
   useEffect(() => {
-    setListingSlice(null);
+    if (hasInitializedDefaultSlice.current) {
+      setListingSlice(null);
+    }
   }, [selectedField]);
 
   //过滤listings
